@@ -1,1 +1,1 @@
-export * from './dist/bundle'
+module.exports=require('./src/main')
