@@ -1,12 +1,13 @@
 {
   "name": "idsfind",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.2",
+  "description": "a tool for searching Chinese character",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "repository":"toyjack/idsfind",
+  "keywords": ["ids","Chinese charcter"],
   "author": "Guanwei Liu",
   "license": "MIT"
 }
