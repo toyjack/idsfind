@@ -4,10 +4,19 @@
   "description": "a tool for searching Chinese character",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update-chise": "node ./src/util/gen_IDS_data.js"
   },
-  "repository":"toyjack/idsfind",
-  "keywords": ["ids","Chinese charcter"],
+  "repository": "toyjack/idsfind",
+  "keywords": [
+    "ids",
+    "Chinese charcter"
+  ],
   "author": "Guanwei Liu",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "csv": "^4.0.0",
+    "d3-dsv": "^1.0.10",
+    "simple-git": "^1.105.0"
+  }
 }

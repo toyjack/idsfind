@@ -1,6 +1,5 @@
-//
-const decomposes=require("../lib/idsdata").decomposes;
-const strokecount = require("../lib/strokecount");
+const decomposes=require("./lib/idsdata").decomposes;
+const strokecount = require("./lib/strokecount");
 
 function str2arr(str) {
     //'口人口二' to [ '二', '人', '口', '口' ]

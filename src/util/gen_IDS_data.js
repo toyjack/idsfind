@@ -1,28 +1,16 @@
-//
 const path =require('path')
 const fs= require('fs')
 const os = require('os')
 
-const chiseIdsGitUrl='http://git.chise.org/git/chise/ids.git'
 
-console.log('Chise IDS data downloading...')
-require('simple-git')('../IDS_data').clone(chiseIdsGitUrl,'chise-ids-git',(err)=>{
-  if(!err){
-    console.log('Done!')
-  }
-  process.exit(1)
-});
-
-console.log('Making raw data...')
-
-//read filelist
 const workPath=path.resolve(__dirname,'../IDS_data/chise-ids-git/')
 let fileListInGit=fs.readdirSync(workPath)
 let rawRawData=''
-console.log('Making raw.js...')
+
+console.log('Making raw data...')
+
 for (let file of fileListInGit){
   if(file.match(/^IDS-UCS-.+/)){
-    // console.log('Found ',file);
     let tempPath=path.resolve(workPath,file)
     let tempData=fs.readFileSync(tempPath,'utf8')
 
@@ -34,22 +22,17 @@ for (let file of fileListInGit){
   }
 }
 let allLines=rawRawData.split(os.EOL)
-// let out="module.exports = {"+os.EOL
 let ids_data={}
 for(line of allLines){
   let arr=line.split('\t')
   if(arr[1]){
-    // out+='\t\"'+arr[1]+'\":\"'+arr[2]+'\",'+os.EOL
   ids_data[arr[1]]=arr[2]
   }
 }
 
-// out+="}"
-// fs.writeFileSync('../IDS_data/raw.js',out,'utf8')
 console.log('done')
 
 
-//ここからはidsdata/gen.jsから引用したものである
 var isIDC=function(code) {
 	return code>=0x2ff0 && code<=0x2fff;
 }
