@@ -119,6 +119,6 @@ let search = function (parts, successor) {
 }
 
 
-// console.log(gsearch("口人3",false))
+console.log(search("口人3",false))
 
 module.exports=search

@@ -1,5 +1,5 @@
 
-const strokestr=require("./strokestr");
+const strokestr=require("../install/data/strokestr");
 
 // z0y/node_modules/strokecount/strokecount.js
 // より引用・修正
