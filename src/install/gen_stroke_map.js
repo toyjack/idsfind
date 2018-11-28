@@ -1,13 +1,12 @@
-// - yapcheahshen
+  // - yapcheahshen
 // - 13 Jun 2015
 // - z0y/node_modules/strokecount/gen.js
-
 var fs = require('fs');
-var charstroke = require('./data/strokes').charstrokemap;
-
-
+global.charstroke = require('../../data/strokes').charstrokemap;
 
 exports.gen = function () {
+	console.log(global.charstroke)
+
 	var mapbmp = []; //start from 0x3400
 	var mapsur = []; // start from 0x20000
 	//sinica eudc need extra mapping
@@ -57,6 +56,7 @@ exports.gen = function () {
 	var output = "module.exports={";
 	output += 'bmpRLE:"' + bmpstr + '",\r\n';
 	output += 'surRLE:"' + surstr + '"}\r\n';
-	fs.writeFileSync('./data/strokestr.js', output, 'utf8');
+	fs.writeFileSync('data/strokestr.js', output, 'utf8');
 	console.log('strokestr.js write file down!')
+	return "gen strokes map done!"
 }

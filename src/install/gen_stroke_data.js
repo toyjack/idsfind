@@ -27,6 +27,7 @@ exports.downloadStroke = download('https://www.unicode.org/Public/UCD/latest/ucd
             fs.writeFile(outFile, global.output, 'utf8', (err, data) => {
                 if (err) throw err;
                 console.log('strokes.js write file done')
+                return "gen strokes data done!"
             });
         })
     });

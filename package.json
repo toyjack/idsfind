@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update-chise": "node ./src/util/gen_IDS_data.js"
+    "postinstall": "node ./script/install.js"
   },
   "repository": "toyjack/idsfind",
   "keywords": [
@@ -17,7 +17,6 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "csv": "^4.0.0",
-    "d3-dsv": "^1.0.10",
     "download": "^7.1.0",
     "simple-git": "^1.105.0"
   }

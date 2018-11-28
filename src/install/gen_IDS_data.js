@@ -1,4 +1,4 @@
-//
+
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
@@ -12,7 +12,7 @@ const genidsPath = "./data/ids_"
 const chalk = require('chalk')
 console.log(chalk.blue('CHISE IDS data downloading...'))
 
-exports.run=require('simple-git')(libPath).clone(chiseIdsGitUrl, 'chise-ids-git', (err) => {
+exports.run=require('simple-git')('data/').clone(chiseIdsGitUrl, 'chise-ids-git', (err) => {
 		if (err) {
 			console.log(err)
 		}	
@@ -56,6 +56,7 @@ function gen() {
 	fs.writeFileSync('./data/raw.js', out, 'utf8')
 	// console.log(ids_data)
 	console.log('done')
+	return "gen IDS data done!"
 }
 
 

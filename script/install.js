@@ -15,7 +15,7 @@ const csvOptions = {
 const dl_options = {
   extract: true
 }
-const workPath = path.resolve(__dirname, '../../data/chise-ids-git')
+const workPath = path.resolve(__dirname, '../data/chise-ids-git')
 
 
 download(unihanUrl, dist, dl_options).then(data => {
