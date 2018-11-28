@@ -118,7 +118,4 @@ let search = function (parts, successor) {
 	return res;
 }
 
-
-console.log(search("口人3",false))
-
 module.exports=search
