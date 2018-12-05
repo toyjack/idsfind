@@ -1,5 +1,8 @@
-/data/*
-!/data/idsdata/index.js
+!data
+data/*
+!data/idsdata
+data/idsdata/*
+!data/idsdata/index.js
 
 # Created by https://www.gitignore.io/api/node,macos,windows,visualstudiocode
 
