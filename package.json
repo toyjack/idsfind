@@ -1,6 +1,6 @@
 {
   "name": "idsfind",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "a tool for searching Chinese character",
   "main": "index.js",
   "scripts": {
