@@ -7,7 +7,7 @@ IDSと画数で漢字を検索するモジュール
 ## Install
 
 ```bash
-npm install idsfind --save`
+npm install idsfind --save
 ```
 
 ## Use
