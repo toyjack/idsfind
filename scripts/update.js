@@ -33836,3 +33836,4 @@ function genInverted(ids, hanzi) {
         console.log(source.green("Done"));
     }
 })();
+//# sourceMappingURL=update.js.map

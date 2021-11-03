@@ -1,9 +1,3 @@
-
-
-// const IDS_JSON: IDSOBJ = JSON.parse(readFileSync(IDS_JSON_FILE_PATH, 'utf-8'))
-// const STROKES_JSON: STROKEJSON = JSON.parse(readFileSync(STROKES_JSON_FILE_PATH, 'utf-8'))
-// const INVERTED_IDS_JSON: ALLINVERTEDIDS = JSON.parse(readFileSync(INVERTED_IDS_FILE_PATH, 'utf-8'))
-
 import INVERTED_IDS from '../data/inverted_ids.json'
 import STROKES from '../data/Strokes.json'
 
@@ -43,9 +37,9 @@ export function idsfind(termString: string, isDeep?: boolean): string[] {
     for (const idsPart of termIDS) {
       resultsPool.push(INVERTED_IDS[0][idsPart])
     }
+    results = intersection(resultsPool)
   }
-  results = intersection(resultsPool)
-
+  
   if (remainStrokeCount) {
     let termStrokeCount: number = 0
     for (const idsPart of termIDS) {
