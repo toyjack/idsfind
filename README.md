@@ -1,17 +1,13 @@
 
 # IDSFIND
-
-[![npm version](https://badge.fury.io/js/idsfind.svg)](https://badge.fury.io/js/idsfind)
-
 IDSと画数で漢字を検索するモジュール
 
-
+[![npm version](https://badge.fury.io/js/idsfind.svg)](https://badge.fury.io/js/idsfind)
 
 ## Install
 ```bash
 npm install idsfind
 ```
-
 
 ## Use
 nodejs
@@ -19,6 +15,7 @@ nodejs
 const idsfind = require('idsfind')
 console.log(idsfind.idsfind('口12'))
 ```
+
 typescript
 ```js
 import {idsfind} from 'idsfind'
@@ -30,12 +27,10 @@ console.log(idsfind('口12'))
 npm run build
 ```
 
-
 ## Update data
 ```bash
 npm run update
 ```
-
 
 ## References
 [文字情報サービス環境CHISE](https://www.chise.org/index.ja.html)
