@@ -75,11 +75,6 @@ function genInverted(ids: string[], hanzi: string) {
     return //　'一':'一'　のようなものを除外
   }
 
-  if (depth>2000){
-    console.log("out of range", ids)
-    return
-  }
-
   for (const idsPart of ids) {
     if (isIDC(idsPart)) {
       continue
@@ -103,7 +98,7 @@ function genInverted(ids: string[], hanzi: string) {
 
 (async () => {
   console.log(chalk.blue('Downloading Unihan database...'))
-  await download(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS);
+  // await download(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS);
   if (existsSync(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) {
     console.log(chalk.green('Done!'))
     const content = readFileSync(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt', 'utf8')
@@ -117,11 +112,11 @@ function genInverted(ids: string[], hanzi: string) {
       }
     }
     writeOutJsonFile(strokesObj, 'data/Strokes.json')
+
     console.log(chalk.blue('Downloading Unihan database...'))
-    await download(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)
+    // await download(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)
     console.log(chalk.green('Done!'))
     const chiseFileList = readdirSync(DOWNLOAD_CHISEIDS_TO + '/ids-master')
-    console.log(chiseFileList)
     let rawChiseData = ""
     console.log(chalk.blue('Making raw data...'))
     for (let file of chiseFileList) {
@@ -151,14 +146,22 @@ function genInverted(ids: string[], hanzi: string) {
       idsObj[hanzi] = fixSurrogate(ids)
     }
     // writeOutJsonFile(idsObj, 'data/IDS.json')
+
     console.log(chalk.blue("Making inverted IDS data: inverted_ids.json"))
-    
     for (const hanzi in idsObj) {
       let ids = idsObj[hanzi]
       genInverted(ids, hanzi)
     }
     // console.log(inverted)
-    writeOutJsonFile(inverted, 'data/inverted_ids.json')
+    const inverted_ids_first_level= inverted[0]
+    const inverted_ids_remaining={}
+    for (let key in inverted){
+      if(key!="0"){
+        inverted_ids_remaining[key]=inverted[key]
+      }
+    }
+    writeOutJsonFile(inverted_ids_first_level, 'data/inverted_ids_first_level.json')
+    writeOutJsonFile(inverted_ids_remaining, 'data/inverted_ids_remaining.json')
     console.log(chalk.green("Done"))
   }
 })();

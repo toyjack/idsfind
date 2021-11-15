@@ -1,4 +1,6 @@
-import INVERTED_IDS from '../data/inverted_ids.json'
+import INVERTED_IDS_FIRST_LEVEL from '../data/inverted_ids_first_level.json'
+import INVERTED_IDS_REMAINING from '../data/inverted_ids_remaining.json'
+
 import STROKES from '../data/Strokes.json'
 
 function intersection(arrs) {
@@ -30,12 +32,12 @@ export function idsfind(termString: string, isDeep?: boolean): string[] {
   let resultsPool = []
 
   if (termIDS.length === 1) {
-    results = INVERTED_IDS[0][termIDS]
+    results = INVERTED_IDS_FIRST_LEVEL[termIDS]
   }
 
   if (termIDS.length > 1) {
     for (const idsPart of termIDS) {
-      resultsPool.push(INVERTED_IDS[0][idsPart])
+      resultsPool.push(INVERTED_IDS_FIRST_LEVEL[idsPart])
     }
     results = intersection(resultsPool)
   }

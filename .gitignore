@@ -1,8 +1,8 @@
 !data
 data/*
-!data/IDS.json
-!data/inverted_ids.json
-!Strokes.json
+!data/inverted_ids_first_level.json
+!data/inverted_ids_remaining.json
+!data/Strokes.json
 
 package-lock.json
 
