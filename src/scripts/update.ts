@@ -98,7 +98,7 @@ function genInverted(ids: string[], hanzi: string) {
 
 (async () => {
   console.log(chalk.blue('Downloading Unihan database...'))
-  // await download(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS);
+  await download(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS);
   if (existsSync(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) {
     console.log(chalk.green('Done!'))
     const content = readFileSync(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt', 'utf8')
@@ -114,7 +114,7 @@ function genInverted(ids: string[], hanzi: string) {
     writeOutJsonFile(strokesObj, 'data/Strokes.json')
 
     console.log(chalk.blue('Downloading Unihan database...'))
-    // await download(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)
+    await download(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)
     console.log(chalk.green('Done!'))
     const chiseFileList = readdirSync(DOWNLOAD_CHISEIDS_TO + '/ids-master')
     let rawChiseData = ""
