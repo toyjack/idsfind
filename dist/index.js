@@ -305797,6 +305797,10 @@ function idsfind(termString, isDeep) {
     }
     return results;
 }
+function getTotalStrokes(char) {
+    return STROKES[char];
+}
 
+exports.getTotalStrokes = getTotalStrokes;
 exports.idsfind = idsfind;
 //# sourceMappingURL=index.js.map
