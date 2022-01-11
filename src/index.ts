@@ -1,10 +1,11 @@
 import INVERTED_IDS_FIRST_LEVEL from '../data/inverted_ids_first_level.json'
 // import INVERTED_IDS_REMAINING from '../data/inverted_ids_remaining.json'
+import INVERTED_IDS_ALL from '../data/inverted_ids_all.json'
 
 import STROKES from '../data/Strokes.json'
 
-function intersection(arrs) {
-  let prev_arr = arrs[0]
+function intersection(arrs: any[][]) {
+  let prev_arr: string[] = arrs[0]
   for (let arr of arrs) {
     prev_arr = prev_arr.filter((x) => arr.includes(x));
   }
@@ -22,8 +23,11 @@ function strokeCountFilter(results: string[], strokeCount: number): string[] {
 }
 
 export function idsfind(termString: string, isDeep?: boolean): string[] {
-  if (!isDeep) {
-    isDeep = false
+  let IDS_DATA = {}
+  if (isDeep==true) {
+    IDS_DATA = INVERTED_IDS_ALL
+  }else{
+    IDS_DATA = INVERTED_IDS_FIRST_LEVEL
   }
   const strokeCount: any = termString.match(/\d+/g)
   const termIDS: string = termString.replace(/\d+/g, '')
@@ -32,12 +36,12 @@ export function idsfind(termString: string, isDeep?: boolean): string[] {
   let resultsPool = []
 
   if (termIDS.length === 1) {
-    results = INVERTED_IDS_FIRST_LEVEL[termIDS]
+    results = IDS_DATA[termIDS]
   }
 
   if (termIDS.length > 1) {
     for (const idsPart of termIDS) {
-      resultsPool.push(INVERTED_IDS_FIRST_LEVEL[idsPart])
+      resultsPool.push(IDS_DATA[idsPart])
     }
     results = intersection(resultsPool)
   }

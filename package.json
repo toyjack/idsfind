@@ -1,6 +1,6 @@
 {
   "name": "idsfind",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/es/index.js",
@@ -15,7 +15,7 @@
     "IDS"
   ],
   "author": "Guanwe Liu <toyjack@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "chalk": "^4.1.2",
     "csv-parse": "^4.16.3",
@@ -29,6 +29,7 @@
     "@types/download": "^8.0.1",
     "@types/node": "^16.11.6",
     "eslint": "^8.1.0",
+    "lodash": "^4.17.21",
     "rollup": "^2.59.0",
     "rollup-plugin-filesize": "^9.1.1",
     "tslib": "^2.3.1",

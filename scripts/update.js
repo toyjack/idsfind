@@ -40,8 +40,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 exports.__esModule = true;
 var fs_1 = require("fs");
+var download_1 = __importDefault(require("download"));
 var sync_1 = __importDefault(require("csv-parse/lib/sync"));
 var chalk_1 = __importDefault(require("chalk"));
+var lodash_1 = require("lodash");
 var UNIHAN_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip";
 var CHISE_IDS_URL = 'https://gitlab.chise.org/CHISE/ids/-/archive/master/ids-master.zip';
 var DOWNLOAD_UNIHAN_TO = 'data/unihan';
@@ -110,74 +112,89 @@ function genInverted(ids, hanzi) {
     }
 }
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var content, records, _i, records_1, record, unicodeString, totalStrokes, unicode, chiseFileList, rawChiseData, _a, chiseFileList_1, file, tempData, chiseRecords, _b, chiseRecords_1, record, hanzi, re_sanshofu, re_idc, ids, hanzi, ids, inverted_ids_first_level, inverted_ids_remaining, key;
+    var content, records, _i, records_1, record, unicodeString, totalStrokes, unicode, chiseFileList, rawChiseData, _a, chiseFileList_1, file, tempData, chiseRecords, _b, chiseRecords_1, record, hanzi, re_sanshofu, re_idc, ids, hanzi, ids, inverted_ids_first_level, inverted_ids_remaining, inverted_ids_all, key;
     return __generator(this, function (_c) {
-        console.log(chalk_1["default"].blue('Downloading Unihan database...'));
-        // await download(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS);
-        if ((0, fs_1.existsSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) {
-            console.log(chalk_1["default"].green('Done!'));
-            content = (0, fs_1.readFileSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt', 'utf8');
-            records = (0, sync_1["default"])(content, CSV_OPTIONS);
-            for (_i = 0, records_1 = records; _i < records_1.length; _i++) {
-                record = records_1[_i];
-                if (record[1] == "kTotalStrokes") {
-                    unicodeString = record[0];
-                    totalStrokes = record[2];
-                    unicode = parseInt(unicodeString.substring(unicodeString.length, 2), 16);
-                    strokesObj[String.fromCodePoint(unicode)] = totalStrokes; // strokesObj['一']=1
+        switch (_c.label) {
+            case 0:
+                console.log(chalk_1["default"].blue('Downloading Unihan database...'));
+                return [4 /*yield*/, (0, download_1["default"])(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS)];
+            case 1:
+                _c.sent();
+                if (!(0, fs_1.existsSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) return [3 /*break*/, 3];
+                console.log(chalk_1["default"].green('Done!'));
+                content = (0, fs_1.readFileSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt', 'utf8');
+                records = (0, sync_1["default"])(content, CSV_OPTIONS);
+                for (_i = 0, records_1 = records; _i < records_1.length; _i++) {
+                    record = records_1[_i];
+                    if (record[1] == "kTotalStrokes") {
+                        unicodeString = record[0];
+                        totalStrokes = record[2];
+                        unicode = parseInt(unicodeString.substring(unicodeString.length, 2), 16);
+                        strokesObj[String.fromCodePoint(unicode)] = totalStrokes; // strokesObj['一']=1
+                    }
                 }
-            }
-            writeOutJsonFile(strokesObj, 'data/Strokes.json');
-            console.log(chalk_1["default"].blue('Downloading Unihan database...'));
-            // await download(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)
-            console.log(chalk_1["default"].green('Done!'));
-            chiseFileList = (0, fs_1.readdirSync)(DOWNLOAD_CHISEIDS_TO + '/ids-master');
-            rawChiseData = "";
-            console.log(chalk_1["default"].blue('Making raw data...'));
-            for (_a = 0, chiseFileList_1 = chiseFileList; _a < chiseFileList_1.length; _a++) {
-                file = chiseFileList_1[_a];
-                if (file.match(/^IDS-UCS-.+/)) {
-                    console.log('Found ', file);
-                    tempData = (0, fs_1.readFileSync)(DOWNLOAD_CHISEIDS_TO + '/ids-master/' + file, 'utf8');
-                    //cut first line
-                    //ref https://stackoverflow.com/questions/2528076/delete-a-line-of-text-in-javascript
-                    tempData = tempData.substring(tempData.indexOf("\n") + 1);
-                    rawChiseData += tempData;
+                writeOutJsonFile(strokesObj, 'data/Strokes.json');
+                console.log(chalk_1["default"].blue('Downloading Unihan database...'));
+                return [4 /*yield*/, (0, download_1["default"])(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)];
+            case 2:
+                _c.sent();
+                console.log(chalk_1["default"].green('Done!'));
+                chiseFileList = (0, fs_1.readdirSync)(DOWNLOAD_CHISEIDS_TO + '/ids-master');
+                rawChiseData = "";
+                console.log(chalk_1["default"].blue('Making raw data...'));
+                for (_a = 0, chiseFileList_1 = chiseFileList; _a < chiseFileList_1.length; _a++) {
+                    file = chiseFileList_1[_a];
+                    if (file.match(/^IDS-UCS-.+/)) {
+                        console.log('Found ', file);
+                        tempData = (0, fs_1.readFileSync)(DOWNLOAD_CHISEIDS_TO + '/ids-master/' + file, 'utf8');
+                        //cut first line
+                        //ref https://stackoverflow.com/questions/2528076/delete-a-line-of-text-in-javascript
+                        tempData = tempData.substring(tempData.indexOf("\n") + 1);
+                        rawChiseData += tempData;
+                    }
                 }
-            }
-            // writeFileSync(DOWNLOAD_CHISEIDS_TO+'/raw.txt',rawChiseData,'utf-8')
-            console.log(chalk_1["default"].green('Done!'));
-            chiseRecords = (0, sync_1["default"])(rawChiseData, CSV_OPTIONS);
-            for (_b = 0, chiseRecords_1 = chiseRecords; _b < chiseRecords_1.length; _b++) {
-                record = chiseRecords_1[_b];
-                hanzi = record[1];
-                re_sanshofu = /&[^;]+;/g;
-                re_idc = /[⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻]/g;
-                ids = record[2];
-                if (re_sanshofu.test(hanzi)) {
-                    continue;
+                // writeFileSync(DOWNLOAD_CHISEIDS_TO+'/raw.txt',rawChiseData,'utf-8')
+                console.log(chalk_1["default"].green('Done!'));
+                chiseRecords = (0, sync_1["default"])(rawChiseData, CSV_OPTIONS);
+                for (_b = 0, chiseRecords_1 = chiseRecords; _b < chiseRecords_1.length; _b++) {
+                    record = chiseRecords_1[_b];
+                    hanzi = record[1];
+                    re_sanshofu = /&[^;]+;/g;
+                    re_idc = /[⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻]/g;
+                    ids = record[2];
+                    if (re_sanshofu.test(hanzi)) {
+                        continue;
+                    }
+                    ids = ids.replace(re_idc, '');
+                    ids = ids.replace(re_sanshofu, '');
+                    idsObj[hanzi] = fixSurrogate(ids);
                 }
-                ids = ids.replace(re_idc, '');
-                ids = ids.replace(re_sanshofu, '');
-                idsObj[hanzi] = fixSurrogate(ids);
-            }
-            // writeOutJsonFile(idsObj, 'data/IDS.json')
-            console.log(chalk_1["default"].blue("Making inverted IDS data: inverted_ids.json"));
-            for (hanzi in idsObj) {
-                ids = idsObj[hanzi];
-                genInverted(ids, hanzi);
-            }
-            inverted_ids_first_level = inverted[0];
-            inverted_ids_remaining = {};
-            for (key in inverted) {
-                if (key != "0") {
-                    inverted_ids_remaining[key] = inverted[key];
+                // writeOutJsonFile(idsObj, 'data/IDS.json')
+                console.log(chalk_1["default"].blue("Making inverted IDS data: inverted_ids.json"));
+                for (hanzi in idsObj) {
+                    ids = idsObj[hanzi];
+                    genInverted(ids, hanzi);
                 }
-            }
-            writeOutJsonFile(inverted_ids_first_level, 'data/inverted_ids_first_level.json');
-            writeOutJsonFile(inverted_ids_remaining, 'data/inverted_ids_remaining.json');
-            console.log(chalk_1["default"].green("Done"));
+                inverted_ids_first_level = inverted[0];
+                inverted_ids_remaining = {};
+                inverted_ids_all = {};
+                for (key in inverted) {
+                    if (key != "0") {
+                        inverted_ids_remaining[key] = inverted[key];
+                    }
+                    //merge
+                    inverted_ids_all = (0, lodash_1.mergeWith)(inverted_ids_all, inverted[key], function (a, b) {
+                        if ((0, lodash_1.isArray)(a) && (0, lodash_1.isArray)(b)) {
+                            return a.concat(b);
+                        }
+                    });
+                }
+                writeOutJsonFile(inverted_ids_first_level, 'data/inverted_ids_first_level.json');
+                writeOutJsonFile(inverted_ids_remaining, 'data/inverted_ids_remaining.json');
+                writeOutJsonFile(inverted_ids_all, 'data/inverted_ids_all.json');
+                console.log(chalk_1["default"].green("Done"));
+                _c.label = 3;
+            case 3: return [2 /*return*/];
         }
-        return [2 /*return*/];
     });
 }); })();

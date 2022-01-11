@@ -2,6 +2,7 @@ import { existsSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import download from 'download';
 import parse from 'csv-parse/lib/sync';
 import chalk from 'chalk';
+import { mergeWith, isArray } from 'lodash'
 
 interface IDSOBJ {
   [hanzi: string]: string[]
@@ -50,16 +51,16 @@ function writeOutJsonFile(jsonData, fileName) {
   writeFileSync(fileName, jsonStr, 'utf-8')
 }
 
-function fixSurrogate(idsString: string){
-  let temp: string[]=[]
-  for (let i=0;i<idsString.length;i++){
-    const idsCode=idsString[i].charCodeAt(0)
-    if (0xD800 <= idsCode && idsCode <= 0xDBFF){
-      const hi =idsString[i]
-      const low = idsString[i+1]
-      temp.push(hi+low)
+function fixSurrogate(idsString: string) {
+  let temp: string[] = []
+  for (let i = 0; i < idsString.length; i++) {
+    const idsCode = idsString[i].charCodeAt(0)
+    if (0xD800 <= idsCode && idsCode <= 0xDBFF) {
+      const hi = idsString[i]
+      const low = idsString[i + 1]
+      temp.push(hi + low)
       i++
-    }else{
+    } else {
       temp.push(idsString[i])
     }
   }
@@ -67,11 +68,11 @@ function fixSurrogate(idsString: string){
 }
 
 function genInverted(ids: string[], hanzi: string) {
-  if(ids[0]=="&"){
+  if (ids[0] == "&") {
     return
   }
-  
-  if (ids.length===1) {
+
+  if (ids.length === 1) {
     return //　'一':'一'　のようなものを除外
   }
 
@@ -79,8 +80,8 @@ function genInverted(ids: string[], hanzi: string) {
     if (isIDC(idsPart)) {
       continue
     }
-    if (!inverted[depth]){
-      inverted[depth]={}
+    if (!inverted[depth]) {
+      inverted[depth] = {}
     }
 
     if (!inverted[depth][idsPart]) {
@@ -88,7 +89,7 @@ function genInverted(ids: string[], hanzi: string) {
     }
     inverted[depth][idsPart].push(hanzi)
 
-    if (idsObj[idsPart] && idsPart!=hanzi) {
+    if (idsObj[idsPart] && idsPart != hanzi) {
       depth++
       genInverted(idsObj[idsPart], hanzi)
       depth--
@@ -107,7 +108,7 @@ function genInverted(ids: string[], hanzi: string) {
       if (record[1] == "kTotalStrokes") {
         const unicodeString = record[0]
         const totalStrokes = record[2]
-        const unicode = parseInt(unicodeString.substring(unicodeString.length,2),16)
+        const unicode = parseInt(unicodeString.substring(unicodeString.length, 2), 16)
         strokesObj[String.fromCodePoint(unicode)] = totalStrokes // strokesObj['一']=1
       }
     }
@@ -138,11 +139,11 @@ function genInverted(ids: string[], hanzi: string) {
       const re_sanshofu = /&[^;]+;/g
       const re_idc = /[⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻]/g
       let ids = record[2]
-      if (re_sanshofu.test(hanzi)){
+      if (re_sanshofu.test(hanzi)) {
         continue
       }
-      ids=ids.replace(re_idc,'')
-      ids=ids.replace(re_sanshofu,'')
+      ids = ids.replace(re_idc, '')
+      ids = ids.replace(re_sanshofu, '')
       idsObj[hanzi] = fixSurrogate(ids)
     }
     // writeOutJsonFile(idsObj, 'data/IDS.json')
@@ -153,15 +154,26 @@ function genInverted(ids: string[], hanzi: string) {
       genInverted(ids, hanzi)
     }
     // console.log(inverted)
-    const inverted_ids_first_level= inverted[0]
-    const inverted_ids_remaining={}
-    for (let key in inverted){
-      if(key!="0"){
-        inverted_ids_remaining[key]=inverted[key]
+    const inverted_ids_first_level = inverted[0]
+    let inverted_ids_remaining = {}
+    let inverted_ids_all = {}
+    for (let key in inverted) {
+      if (key != "0") {
+        inverted_ids_remaining[key] = inverted[key]
       }
+      //merge
+      // https://qiita.com/minodisk/items/981c074f12d4d1d7b0d5
+      inverted_ids_all = mergeWith(inverted_ids_all, inverted[key]
+        , function (a: string[], b:string[]) {
+          if (isArray(a) && isArray(b)) {
+            return a.concat(b);
+          }
+        });
+
     }
     writeOutJsonFile(inverted_ids_first_level, 'data/inverted_ids_first_level.json')
     writeOutJsonFile(inverted_ids_remaining, 'data/inverted_ids_remaining.json')
+    writeOutJsonFile(inverted_ids_all, 'data/inverted_ids_all.json')
     console.log(chalk.green("Done"))
   }
 })();
