@@ -114,7 +114,7 @@ function genInverted(ids: string[], hanzi: string) {
     }
     writeOutJsonFile(strokesObj, 'data/Strokes.json')
 
-    console.log(chalk.blue('Downloading Unihan database...'))
+    console.log(chalk.blue('Downloading CHISE...'))
     await download(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)
     console.log(chalk.green('Done!'))
     const chiseFileList = readdirSync(DOWNLOAD_CHISEIDS_TO + '/ids-master')
