@@ -1,6 +1,7 @@
 import INVERTED_IDS_FIRST_LEVEL from '../data/inverted_ids_first_level.json'
 // import INVERTED_IDS_REMAINING from '../data/inverted_ids_remaining.json'
 import INVERTED_IDS_ALL from '../data/inverted_ids_all.json'
+import CJKVI_IDS from '../data/cjkvi.json'
 
 import STROKES from '../data/Strokes.json'
 
@@ -61,4 +62,8 @@ export function idsfind(termString: string, isDeep?: boolean): string[] {
 
 export function getTotalStrokes(char: string): number{
   return STROKES[char]
+}
+
+export function getCjkviIDS(char: string):string{
+  return CJKVI_IDS[char]
 }
