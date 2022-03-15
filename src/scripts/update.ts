@@ -20,11 +20,17 @@ interface ALLINVERTEDIDS {
   [depth: number]: INVERTEDIDS
 }
 
+interface CJKVI_IDS{
+  [char: string]: string
+}
+
 
 const UNIHAN_URL: string = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
 const CHISE_IDS_URL: string = 'https://gitlab.chise.org/CHISE/ids/-/archive/master/ids-master.zip';
+const CJKVI_IDS_URL = "https://github.com/toyjack/cjkvi-ids/archive/refs/heads/master.zip"
 const DOWNLOAD_UNIHAN_TO: string = 'data/unihan';
 const DOWNLOAD_CHISEIDS_TO: string = 'data/chise-ids';
+const DOWNLOAD_CJKVIIDS_TO: string = 'data/cjkvi-ids';
 const DOWNLOAD_OPTIONS: any = {
   extract: true
 };
@@ -39,6 +45,7 @@ let inverted: ALLINVERTEDIDS = {}
 let depth: number = 0;
 let strokesObj: STOKESOBJ = {};
 let idsObj: IDSOBJ = {};
+let cjkviObj:CJKVI_IDS = {};
 
 function isIDC(part: string) {
   let code = part.codePointAt(0)
@@ -113,6 +120,30 @@ function genInverted(ids: string[], hanzi: string) {
       }
     }
     writeOutJsonFile(strokesObj, 'data/Strokes.json')
+    console.log(chalk.green('Done!'))
+
+
+    console.log(chalk.blue('Downloading cjkvi-ids...'))
+    await download(CJKVI_IDS_URL, DOWNLOAD_CJKVIIDS_TO, DOWNLOAD_OPTIONS);
+    if (existsSync(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids.txt') && existsSync(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids-ext-cdef.txt')) {
+      console.log(chalk.green('Converting data...'))
+      const ids_basic = readFileSync(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids.txt', 'utf8')
+      const ids_cdef = readFileSync(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids-ext-cdef.txt', 'utf8')
+      const ids_basic_records = parse(ids_basic, CSV_OPTIONS)
+      const ids_cdef_records = parse(ids_cdef, CSV_OPTIONS)
+      // console.log(ids_cdef_records)
+      // cjkviObj
+      for (let record of ids_basic_records){
+        cjkviObj[record[1]]=record[2]
+      }
+      for (let record of ids_cdef_records){
+        cjkviObj[record[1]]=record[2]
+      }
+      writeOutJsonFile(cjkviObj, 'data/cjkvi.json')
+      console.log(chalk.green('Done!'))
+    }
+
+
 
     console.log(chalk.blue('Downloading CHISE...'))
     await download(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)
@@ -130,7 +161,6 @@ function genInverted(ids: string[], hanzi: string) {
         rawChiseData += tempData
       }
     }
-    // writeFileSync(DOWNLOAD_CHISEIDS_TO+'/raw.txt',rawChiseData,'utf-8')
     console.log(chalk.green('Done!'))
 
     const chiseRecords = parse(rawChiseData, CSV_OPTIONS)
@@ -164,7 +194,7 @@ function genInverted(ids: string[], hanzi: string) {
       //merge
       // https://qiita.com/minodisk/items/981c074f12d4d1d7b0d5
       inverted_ids_all = mergeWith(inverted_ids_all, inverted[key]
-        , function (a: string[], b:string[]) {
+        , function (a: string[], b: string[]) {
           if (isArray(a) && isArray(b)) {
             return a.concat(b);
           }

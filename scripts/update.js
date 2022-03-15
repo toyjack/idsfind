@@ -46,8 +46,10 @@ var chalk_1 = __importDefault(require("chalk"));
 var lodash_1 = require("lodash");
 var UNIHAN_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip";
 var CHISE_IDS_URL = 'https://gitlab.chise.org/CHISE/ids/-/archive/master/ids-master.zip';
+var CJKVI_IDS_URL = "https://github.com/toyjack/cjkvi-ids/archive/refs/heads/master.zip";
 var DOWNLOAD_UNIHAN_TO = 'data/unihan';
 var DOWNLOAD_CHISEIDS_TO = 'data/chise-ids';
+var DOWNLOAD_CJKVIIDS_TO = 'data/cjkvi-ids';
 var DOWNLOAD_OPTIONS = {
     extract: true
 };
@@ -61,6 +63,7 @@ var inverted = {};
 var depth = 0;
 var strokesObj = {};
 var idsObj = {};
+var cjkviObj = {};
 function isIDC(part) {
     var code = part.codePointAt(0);
     return code >= 0x2ff0 && code <= 0x2fff;
@@ -112,15 +115,15 @@ function genInverted(ids, hanzi) {
     }
 }
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var content, records, _i, records_1, record, unicodeString, totalStrokes, unicode, chiseFileList, rawChiseData, _a, chiseFileList_1, file, tempData, chiseRecords, _b, chiseRecords_1, record, hanzi, re_sanshofu, re_idc, ids, hanzi, ids, inverted_ids_first_level, inverted_ids_remaining, inverted_ids_all, key;
-    return __generator(this, function (_c) {
-        switch (_c.label) {
+    var content, records, _i, records_1, record, unicodeString, totalStrokes, unicode, ids_basic, ids_cdef, ids_basic_records, ids_cdef_records, _a, ids_basic_records_1, record, _b, ids_cdef_records_1, record, chiseFileList, rawChiseData, _c, chiseFileList_1, file, tempData, chiseRecords, _d, chiseRecords_1, record, hanzi, re_sanshofu, re_idc, ids, hanzi, ids, inverted_ids_first_level, inverted_ids_remaining, inverted_ids_all, key;
+    return __generator(this, function (_e) {
+        switch (_e.label) {
             case 0:
                 console.log(chalk_1["default"].blue('Downloading Unihan database...'));
                 return [4 /*yield*/, (0, download_1["default"])(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS)];
             case 1:
-                _c.sent();
-                if (!(0, fs_1.existsSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) return [3 /*break*/, 3];
+                _e.sent();
+                if (!(0, fs_1.existsSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) return [3 /*break*/, 4];
                 console.log(chalk_1["default"].green('Done!'));
                 content = (0, fs_1.readFileSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt', 'utf8');
                 records = (0, sync_1["default"])(content, CSV_OPTIONS);
@@ -134,16 +137,40 @@ function genInverted(ids, hanzi) {
                     }
                 }
                 writeOutJsonFile(strokesObj, 'data/Strokes.json');
-                console.log(chalk_1["default"].blue('Downloading Unihan database...'));
-                return [4 /*yield*/, (0, download_1["default"])(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)];
+                console.log(chalk_1["default"].green('Done!'));
+                console.log(chalk_1["default"].blue('Downloading cjkvi-ids...'));
+                return [4 /*yield*/, (0, download_1["default"])(CJKVI_IDS_URL, DOWNLOAD_CJKVIIDS_TO, DOWNLOAD_OPTIONS)];
             case 2:
-                _c.sent();
+                _e.sent();
+                if ((0, fs_1.existsSync)(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids.txt') && (0, fs_1.existsSync)(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids-ext-cdef.txt')) {
+                    console.log(chalk_1["default"].green('Converting data...'));
+                    ids_basic = (0, fs_1.readFileSync)(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids.txt', 'utf8');
+                    ids_cdef = (0, fs_1.readFileSync)(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids-ext-cdef.txt', 'utf8');
+                    ids_basic_records = (0, sync_1["default"])(ids_basic, CSV_OPTIONS);
+                    ids_cdef_records = (0, sync_1["default"])(ids_cdef, CSV_OPTIONS);
+                    // console.log(ids_cdef_records)
+                    // cjkviObj
+                    for (_a = 0, ids_basic_records_1 = ids_basic_records; _a < ids_basic_records_1.length; _a++) {
+                        record = ids_basic_records_1[_a];
+                        cjkviObj[record[1]] = record[2];
+                    }
+                    for (_b = 0, ids_cdef_records_1 = ids_cdef_records; _b < ids_cdef_records_1.length; _b++) {
+                        record = ids_cdef_records_1[_b];
+                        cjkviObj[record[1]] = record[2];
+                    }
+                    writeOutJsonFile(cjkviObj, 'data/cjkvi.json');
+                    console.log(chalk_1["default"].green('Done!'));
+                }
+                console.log(chalk_1["default"].blue('Downloading CHISE...'));
+                return [4 /*yield*/, (0, download_1["default"])(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)];
+            case 3:
+                _e.sent();
                 console.log(chalk_1["default"].green('Done!'));
                 chiseFileList = (0, fs_1.readdirSync)(DOWNLOAD_CHISEIDS_TO + '/ids-master');
                 rawChiseData = "";
                 console.log(chalk_1["default"].blue('Making raw data...'));
-                for (_a = 0, chiseFileList_1 = chiseFileList; _a < chiseFileList_1.length; _a++) {
-                    file = chiseFileList_1[_a];
+                for (_c = 0, chiseFileList_1 = chiseFileList; _c < chiseFileList_1.length; _c++) {
+                    file = chiseFileList_1[_c];
                     if (file.match(/^IDS-UCS-.+/)) {
                         console.log('Found ', file);
                         tempData = (0, fs_1.readFileSync)(DOWNLOAD_CHISEIDS_TO + '/ids-master/' + file, 'utf8');
@@ -153,11 +180,10 @@ function genInverted(ids, hanzi) {
                         rawChiseData += tempData;
                     }
                 }
-                // writeFileSync(DOWNLOAD_CHISEIDS_TO+'/raw.txt',rawChiseData,'utf-8')
                 console.log(chalk_1["default"].green('Done!'));
                 chiseRecords = (0, sync_1["default"])(rawChiseData, CSV_OPTIONS);
-                for (_b = 0, chiseRecords_1 = chiseRecords; _b < chiseRecords_1.length; _b++) {
-                    record = chiseRecords_1[_b];
+                for (_d = 0, chiseRecords_1 = chiseRecords; _d < chiseRecords_1.length; _d++) {
+                    record = chiseRecords_1[_d];
                     hanzi = record[1];
                     re_sanshofu = /&[^;]+;/g;
                     re_idc = /[⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻]/g;
@@ -183,6 +209,7 @@ function genInverted(ids, hanzi) {
                         inverted_ids_remaining[key] = inverted[key];
                     }
                     //merge
+                    // https://qiita.com/minodisk/items/981c074f12d4d1d7b0d5
                     inverted_ids_all = (0, lodash_1.mergeWith)(inverted_ids_all, inverted[key], function (a, b) {
                         if ((0, lodash_1.isArray)(a) && (0, lodash_1.isArray)(b)) {
                             return a.concat(b);
@@ -193,8 +220,8 @@ function genInverted(ids, hanzi) {
                 writeOutJsonFile(inverted_ids_remaining, 'data/inverted_ids_remaining.json');
                 writeOutJsonFile(inverted_ids_all, 'data/inverted_ids_all.json');
                 console.log(chalk_1["default"].green("Done"));
-                _c.label = 3;
-            case 3: return [2 /*return*/];
+                _e.label = 4;
+            case 4: return [2 /*return*/];
         }
     });
 }); })();
