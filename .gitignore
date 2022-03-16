@@ -5,6 +5,7 @@ data/*
 !data/inverted_ids_all.json
 !data/Strokes.json
 !data/cjkvi.json
+!data/gw_ids.json
 
 package-lock.json
 
