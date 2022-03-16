@@ -20,17 +20,24 @@ interface ALLINVERTEDIDS {
   [depth: number]: INVERTEDIDS
 }
 
-interface CJKVI_IDS{
+interface CJKVI_IDS {
   [char: string]: string
 }
 
 
 const UNIHAN_URL: string = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
-const CHISE_IDS_URL: string = 'https://gitlab.chise.org/CHISE/ids/-/archive/master/ids-master.zip';
-const CJKVI_IDS_URL = "https://github.com/toyjack/cjkvi-ids/archive/refs/heads/master.zip"
 const DOWNLOAD_UNIHAN_TO: string = 'data/unihan';
+
+const CHISE_IDS_URL: string = 'https://gitlab.chise.org/CHISE/ids/-/archive/master/ids-master.zip';
 const DOWNLOAD_CHISEIDS_TO: string = 'data/chise-ids';
+
+const CJKVI_IDS_URL = "https://github.com/toyjack/cjkvi-ids/archive/refs/heads/master.zip"
 const DOWNLOAD_CJKVIIDS_TO: string = 'data/cjkvi-ids';
+
+const GLYPHWIKI_DUMP_URL = "http://glyphwiki.org/dump.tar.gz"
+const DOWNLOAD_GLYPHWIKI_DUMP_TO: string = 'data/glyphwiki';
+
+
 const DOWNLOAD_OPTIONS: any = {
   extract: true
 };
@@ -42,10 +49,13 @@ const CSV_OPTIONS: any = {
 };
 
 let inverted: ALLINVERTEDIDS = {}
-let depth: number = 0;
-let strokesObj: STOKESOBJ = {};
-let idsObj: IDSOBJ = {};
-let cjkviObj:CJKVI_IDS = {};
+let depth: number = 0
+let strokesObj: STOKESOBJ = {}
+let idsObj: IDSOBJ = {}
+let cjkviObj: CJKVI_IDS = {}
+let glyphwiki_ids_index: string[] = []
+
+
 
 function isIDC(part: string) {
   let code = part.codePointAt(0)
@@ -105,10 +115,31 @@ function genInverted(ids: string[], hanzi: string) {
 }
 
 (async () => {
+  console.log(chalk.blue('Downloading GlyphWiki...'))
+  await download(GLYPHWIKI_DUMP_URL, DOWNLOAD_GLYPHWIKI_DUMP_TO, DOWNLOAD_OPTIONS);
+  if (existsSync(DOWNLOAD_GLYPHWIKI_DUMP_TO + '/dump_newest_only.txt')) {
+    console.log(chalk.green('Done!'))
+    console.log(chalk.blue('Making GlyphWiki database...'))
+    const content = readFileSync(DOWNLOAD_GLYPHWIKI_DUMP_TO + '/dump_newest_only.txt', 'utf8')
+    const lines = content.split("\n")
+    const regexp = /^ u[\da-f]{4,5}-u[\da-f]{4,5}/
+    for (const line of lines){
+      if( regexp.test(line)){
+        const cells = line.split('|').map(e=>e.trim())
+        glyphwiki_ids_index.push(cells[0])
+      }
+    }
+    // console.log(glyphwiki_ids_index)
+    writeOutJsonFile(glyphwiki_ids_index, 'data/gw_ids.json')
+    console.log(chalk.green('Done!'))
+  }
+
   console.log(chalk.blue('Downloading Unihan database...'))
   await download(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS);
   if (existsSync(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) {
     console.log(chalk.green('Done!'))
+    console.log(chalk.blue('Making Unihan database...'))
+
     const content = readFileSync(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt', 'utf8')
     const records = parse(content, CSV_OPTIONS)
     for (let record of records) {
@@ -133,11 +164,11 @@ function genInverted(ids: string[], hanzi: string) {
       const ids_cdef_records = parse(ids_cdef, CSV_OPTIONS)
       // console.log(ids_cdef_records)
       // cjkviObj
-      for (let record of ids_basic_records){
-        cjkviObj[record[1]]=record[2]
+      for (let record of ids_basic_records) {
+        cjkviObj[record[1]] = record[2]
       }
-      for (let record of ids_cdef_records){
-        cjkviObj[record[1]]=record[2]
+      for (let record of ids_cdef_records) {
+        cjkviObj[record[1]] = record[2]
       }
       writeOutJsonFile(cjkviObj, 'data/cjkvi.json')
       console.log(chalk.green('Done!'))
@@ -183,7 +214,6 @@ function genInverted(ids: string[], hanzi: string) {
       let ids = idsObj[hanzi]
       genInverted(ids, hanzi)
     }
-    // console.log(inverted)
     const inverted_ids_first_level = inverted[0]
     let inverted_ids_remaining = {}
     let inverted_ids_all = {}
@@ -206,4 +236,5 @@ function genInverted(ids: string[], hanzi: string) {
     writeOutJsonFile(inverted_ids_all, 'data/inverted_ids_all.json')
     console.log(chalk.green("Done"))
   }
-})();
+}
+)();

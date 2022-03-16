@@ -19,7 +19,10 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "csv-parse": "^4.16.3",
-    "download": "^8.0.0"
+    "download": "^8.0.0",
+    "import": "^0.0.6",
+    "lodash.combinations": "^18.10.0",
+    "lodash.permutations": "^1.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
