@@ -21,8 +21,7 @@
     "chalk": "^4.1.2",
     "csv-parse": "^4.16.3",
     "download": "^8.0.0",
-    "lodash": "^4.17.21",
-    "import": "^0.0.6"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
