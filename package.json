@@ -1,11 +1,12 @@
 {
   "name": "idsfind",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/es/index.js",
   "scripts": {
     "build": "rollup -c",
+    "test": "node test.js",
     "watch": "rollup -c -w",
     "build:update": "tsc ./src/scripts/update.ts --outDir ./scripts/ --esModuleInterop",
     "update": "node ./scripts/update.js"
