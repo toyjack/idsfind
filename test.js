@@ -1,4 +1,4 @@
-var idsfind = require('../dist')
+var idsfind = require('./dist')
 
 const idsfind_test = idsfind.idsfind("土口2")
 // console.log(idsfind_test)
