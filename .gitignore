@@ -6,6 +6,7 @@ data/*
 !data/Strokes.json
 !data/cjkvi.json
 !data/gw_ids.json
+!data/gw_all.json
 
 package-lock.json
 

@@ -67,6 +67,7 @@ var strokesObj = {};
 var idsObj = {};
 var cjkviObj = {};
 var glyphwiki_ids_index = [];
+var glyphwiki_all = [];
 function isIDC(part) {
     var code = part.codePointAt(0);
     return code >= 0x2ff0 && code <= 0x2fff;
@@ -123,7 +124,9 @@ function genInverted(ids, hanzi) {
         switch (_f.label) {
             case 0:
                 console.log(chalk_1["default"].blue('Downloading GlyphWiki...'));
-                // await download(GLYPHWIKI_DUMP_URL, DOWNLOAD_GLYPHWIKI_DUMP_TO, DOWNLOAD_OPTIONS);
+                return [4 /*yield*/, (0, download_1["default"])(GLYPHWIKI_DUMP_URL, DOWNLOAD_GLYPHWIKI_DUMP_TO, DOWNLOAD_OPTIONS)];
+            case 1:
+                _f.sent();
                 if ((0, fs_1.existsSync)(DOWNLOAD_GLYPHWIKI_DUMP_TO + '/dump_newest_only.txt')) {
                     console.log(chalk_1["default"].green('Done!'));
                     console.log(chalk_1["default"].blue('Making GlyphWiki database...'));
@@ -132,20 +135,29 @@ function genInverted(ids, hanzi) {
                     regexp = /^ u[\da-f]{4,5}-u[\da-f]{4,5}/;
                     for (_i = 0, lines_1 = lines; _i < lines_1.length; _i++) {
                         line = lines_1[_i];
+                        cells = line.split('|').map(function (e) { return e.trim(); });
+                        if (cells.length === 3) {
+                            glyphwiki_all.push({
+                                name: cells[0],
+                                related: cells[1],
+                                data: cells[2]
+                            });
+                        }
+                        // make ids index
                         if (regexp.test(line)) {
-                            cells = line.split('|').map(function (e) { return e.trim(); });
                             glyphwiki_ids_index.push(cells[0]);
                         }
                     }
                     // console.log(glyphwiki_ids_index)
                     writeOutJsonFile(glyphwiki_ids_index, 'data/gw_ids.json');
+                    writeOutJsonFile(glyphwiki_all, 'data/gw_all.json');
                     console.log(chalk_1["default"].green('Done!'));
                 }
                 console.log(chalk_1["default"].blue('Downloading Unihan database...'));
                 return [4 /*yield*/, (0, download_1["default"])(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS)];
-            case 1:
+            case 2:
                 _f.sent();
-                if (!(0, fs_1.existsSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) return [3 /*break*/, 4];
+                if (!(0, fs_1.existsSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt')) return [3 /*break*/, 5];
                 console.log(chalk_1["default"].green('Done!'));
                 console.log(chalk_1["default"].blue('Making Unihan database...'));
                 content = (0, fs_1.readFileSync)(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt', 'utf8');
@@ -163,7 +175,7 @@ function genInverted(ids, hanzi) {
                 console.log(chalk_1["default"].green('Done!'));
                 console.log(chalk_1["default"].blue('Downloading cjkvi-ids...'));
                 return [4 /*yield*/, (0, download_1["default"])(CJKVI_IDS_URL, DOWNLOAD_CJKVIIDS_TO, DOWNLOAD_OPTIONS)];
-            case 2:
+            case 3:
                 _f.sent();
                 if ((0, fs_1.existsSync)(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids.txt') && (0, fs_1.existsSync)(DOWNLOAD_CJKVIIDS_TO + '/cjkvi-ids-master/ids-ext-cdef.txt')) {
                     console.log(chalk_1["default"].green('Converting data...'));
@@ -186,7 +198,7 @@ function genInverted(ids, hanzi) {
                 }
                 console.log(chalk_1["default"].blue('Downloading CHISE...'));
                 return [4 /*yield*/, (0, download_1["default"])(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS)];
-            case 3:
+            case 4:
                 _f.sent();
                 console.log(chalk_1["default"].green('Done!'));
                 chiseFileList = (0, fs_1.readdirSync)(DOWNLOAD_CHISEIDS_TO + '/ids-master');
@@ -243,8 +255,8 @@ function genInverted(ids, hanzi) {
                 writeOutJsonFile(inverted_ids_remaining, 'data/inverted_ids_remaining.json');
                 writeOutJsonFile(inverted_ids_all, 'data/inverted_ids_all.json');
                 console.log(chalk_1["default"].green("Done"));
-                _f.label = 4;
-            case 4: return [2 /*return*/];
+                _f.label = 5;
+            case 5: return [2 /*return*/];
         }
     });
 }); })();
