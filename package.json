@@ -1,11 +1,11 @@
 {
   "name": "idsfind",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/es/index.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsc -d --emitDeclarationOnly --declarationDir dist && rollup -c",
     "test": "node test.js",
     "watch": "rollup -c -w",
     "build:update": "tsc ./src/scripts/update.ts --outDir ./scripts/ --esModuleInterop",
@@ -24,11 +24,12 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@rollup/plugin-typescript": "^8.3.0",
     "@types/download": "^8.0.1",
+    "@types/lodash": "^4.14.182",
     "@types/node": "^16.11.6",
     "eslint": "^8.1.0",
     "rollup": "^2.59.0",
