@@ -24,6 +24,12 @@ interface CJKVI_IDS {
   [char: string]: string
 }
 
+interface Glyph {
+  name: string
+  related: string
+  data: string
+}
+
 
 const UNIHAN_URL: string = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
 const DOWNLOAD_UNIHAN_TO: string = 'data/unihan';
@@ -54,7 +60,7 @@ let strokesObj: STOKESOBJ = {}
 let idsObj: IDSOBJ = {}
 let cjkviObj: CJKVI_IDS = {}
 let glyphwiki_ids_index: string[] = []
-
+let glyphwiki_all: Glyph[] = []
 
 
 function isIDC(part: string) {
@@ -124,13 +130,23 @@ function genInverted(ids: string[], hanzi: string) {
     const lines = content.split("\n")
     const regexp = /^ u[\da-f]{4,5}-u[\da-f]{4,5}/
     for (const line of lines){
+      // make glyphwiki all data json
+      const cells = line.split('|').map(e=>e.trim())
+      if (cells.length === 3) {
+        glyphwiki_all.push({
+          name: cells[0],
+          related: cells[1],
+          data: cells[2]
+        })
+      }
+      // make ids index
       if( regexp.test(line)){
-        const cells = line.split('|').map(e=>e.trim())
         glyphwiki_ids_index.push(cells[0])
       }
     }
     // console.log(glyphwiki_ids_index)
     writeOutJsonFile(glyphwiki_ids_index, 'data/gw_ids.json')
+    writeOutJsonFile(glyphwiki_all, 'data/gw_all.json')
     console.log(chalk.green('Done!'))
   }
 
