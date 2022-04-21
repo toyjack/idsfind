@@ -1,7 +1,6 @@
 let  _ = require('lodash');
 
 import INVERTED_IDS_FIRST_LEVEL from '../data/inverted_ids_first_level.json'
-import INVERTED_IDS_REMAINING from '../data/inverted_ids_remaining.json'
 import INVERTED_IDS_ALL from '../data/inverted_ids_all.json'
 import CJKVI_IDS from '../data/cjkvi.json'
 import STROKES from '../data/Strokes.json'
@@ -71,7 +70,7 @@ export function getCjkviIDS(char: string): string {
 }
 
 
-export function get_glyphwiki_ids(ids_string: string) {
+export function get_glyphwiki_ids(ids_string: string) :string[] {
   let query_list: string[] = []
 
   if (!ids_string.length) return
@@ -97,26 +96,3 @@ export function get_glyphwiki_ids(ids_string: string) {
 
   return results
 }
-
-
-// export function search_glyphwiki(ids_string: string) {
-//   if (ids_string.length < 2) return
-//   let query_list = <string[]>[]
-//   const ids_arr: string[] = ids_string.split("")
-//   for (const ids of ids_arr) {
-//     let code = ids.codePointAt(0)
-//     if (code != undefined) {
-//       const gw_name = "u" + code.toString(16)
-//       query_list.push(gw_name)
-//     }
-//   }
-//   if (query_list.length > 1) {
-//     // let combinations = _(query_list).combinations(query_list.length).map(v => _.join(v, '-')).value();
-//     // => ['abc', 'abd', 'abe', 'acd', 'ace', 'ade', 'bcd', 'bce', 'bde', 'cde']
-//     let permutations = _(query_list).permutations(query_list.length).map(v => _.join(v, '-')).value();
-//     // => ['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
-//     return permutations
-//   } else {
-//     return query_list
-//   }
-// }
