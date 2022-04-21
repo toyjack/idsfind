@@ -1,11 +1,12 @@
 {
   "name": "idsfind",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/es/index.js",
   "scripts": {
-    "build": "tsc -d --emitDeclarationOnly --declarationDir dist && rollup -c",
+    "gendec":"tsc src/index.ts  -d --emitDeclarationOnly --declarationDir dist --strict false -t es2020 --moduleResolution node",
+    "build": "gendec && rollup -c",
     "test": "node test.js",
     "watch": "rollup -c -w",
     "build:update": "tsc ./src/scripts/update.ts --outDir ./scripts/ --esModuleInterop",
