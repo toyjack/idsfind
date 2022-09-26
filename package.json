@@ -18,14 +18,9 @@
   ],
   "author": "Guanwe Liu <toyjack@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-    "lodash": "^4.17.21"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.0.6",
-    "@rollup/plugin-typescript": "^8.3.0",
     "@types/download": "^8.0.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^16.11.6",
