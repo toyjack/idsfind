@@ -1,68 +1,71 @@
-import * as _ from 'lodash'
-// import INVERTED_IDS_FIRST_LEVEL from '../data/inverted_ids_first_level.json'
-import INVERTED_IDS_ALL from '../data/inverted_ids_all.json'
-import CJKVI_IDS from '../data/cjkvi.json'
-import STROKES from '../data/Strokes.json'
+import * as _ from "lodash";
+import _INVERTED_IDS_ALL from "../data/inverted_ids_all.json";
+import _CJKVI_IDS from "../data/cjkvi.json";
+import _STROKES from "../data/Strokes.json";
+import { IStrokes, CjkviIds, InvertedIdsAll } from "./types";
 // import GWIDS from '../data/gw_ids.json'
 
+const INVERTED_IDS_ALL = _INVERTED_IDS_ALL as InvertedIdsAll;
+const CJKVI_IDS = _CJKVI_IDS as CjkviIds;
+const STROKES = _STROKES as IStrokes;
+
 function intersection(arrs: any[][]) {
-  let prev_arr: string[] = arrs[0]
-  for (let arr of arrs) {
+  let prev_arr: string[] = arrs[0];
+  for (const arr of arrs) {
     prev_arr = prev_arr.filter((x) => arr.includes(x));
   }
   return prev_arr;
 }
 
 function strokeCountFilter(results: string[], strokeCount: number): string[] {
-  let temp: string[] = []
+  const temp: string[] = [];
   for (const result of results) {
-    if (STROKES[result] == strokeCount) {
-      temp.push(result)
+    if (parseInt(STROKES[result]) == strokeCount) {
+      temp.push(result);
     }
   }
-  return temp
+  return temp;
 }
 
-export function idsfind(termString: string, isDeep=true): string[] {
-  const IDS_DATA = INVERTED_IDS_ALL
-  const strokeCount: any = termString.match(/\d+/g)
-  const termIDS: string = termString.replace(/\d+/g, '')
-  let remainStrokeCount: number = parseInt(strokeCount)
-  let results: string[] = []
-  let resultsPool = []
+export function idsfind(termString: string, isDeep = true): string[] {
+  const IDS_DATA = INVERTED_IDS_ALL;
+  const strokeCount: any = termString.match(/\d+/g);
+  const termIDS: string = termString.replace(/\d+/g, "");
+  const remainStrokeCount: number = parseInt(strokeCount);
+  let results: string[] = [];
+  let resultsPool :string[][];
 
   if (termIDS.length === 1) {
-    results = IDS_DATA[termIDS]
+    results = IDS_DATA[termIDS];
   }
 
   if (termIDS.length > 1) {
     for (const idsPart of termIDS) {
-      resultsPool.push(IDS_DATA[idsPart])
+      resultsPool.push(IDS_DATA[idsPart]);
     }
-    results = intersection(resultsPool)
+    results = intersection(resultsPool);
   }
 
   if (remainStrokeCount) {
-    let termStrokeCount: number = 0
+    let termStrokeCount = 0;
     for (const idsPart of termIDS) {
-      let temp: number = +STROKES[idsPart] // for a compiler bug
-      termStrokeCount += temp
+      const temp: number = +STROKES[idsPart]; // for a compiler bug
+      termStrokeCount += temp;
     }
-    const strokeCountForFilter: number = termStrokeCount + remainStrokeCount
-    results = strokeCountFilter(results, strokeCountForFilter)
+    const strokeCountForFilter: number = termStrokeCount + remainStrokeCount;
+    results = strokeCountFilter(results, strokeCountForFilter);
   }
 
-  return results
+  return results;
 }
 
 export function getTotalStrokes(char: string): number {
-  return STROKES[char]
+  return parseInt(STROKES[char]);
 }
 
 export function getCjkviIDS(char: string): string {
-  return CJKVI_IDS[char]
+  return CJKVI_IDS[char];
 }
-
 
 // export function get_glyphwiki_ids(ids_string: string) :string[] {
 //   let query_list: string[] = []

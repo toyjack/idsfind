@@ -19,9 +19,6 @@
   "author": "Guanwe Liu <toyjack@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^4.1.2",
-    "csv-parse": "^4.16.3",
-    "download": "^8.0.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
@@ -32,6 +29,11 @@
     "@types/download": "^8.0.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^16.11.6",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "chalk": "^4.1.2",
+    "csv-parse": "^4.16.3",
+    "download": "^8.0.0",
     "esbuild": "^0.15.9",
     "eslint": "^8.1.0",
     "rollup": "^2.59.0",

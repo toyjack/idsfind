@@ -12,8 +12,10 @@ Searching Chinese characters by their components and remaining stroke count
 ### 2.4.0
 
 - Add Ext.H support
-- Change to only search only deeply
+- Change to search always deeply
 - Since the json file for GlyphWiki IDS is so big, move and create another module
+
+Those who want to search characters in GlyphWiki by IDS, please use [gwsearch](https://github.com/kurgm/gwsearch)
 
 ## Install
 
@@ -35,7 +37,6 @@ typescript
 ```js
 import {idsfind} from 'idsfind'
 console.log(idsfind('口12'))
-console.log(idsfind('口12', true)) // search deeply
 ```
 
 ## Build
