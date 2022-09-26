@@ -24,7 +24,7 @@ var U = [
 	"𭔙",
 	"𮍲"
 ];
-var INVERTED_IDS_ALL = {
+var _INVERTED_IDS_ALL = {
 	"2": [
 	"𰅫"
 ],
@@ -457833,7 +457833,7 @@ var INVERTED_IDS_ALL = {
 ]
 };
 
-var CJKVI_IDS = {
+var _CJKVI_IDS = {
 	"α": "α",
 	"ℓ": "ℓ",
 	"①": "①",
@@ -546773,7 +546773,7 @@ var CJKVI_IDS = {
 	"𪘀": "⿰齒幷"
 };
 
-var STROKES = {
+var _STROKES = {
 	"㐀": "5",
 	"㐁": "6",
 	"㐂": "6",
@@ -644836,54 +644836,57 @@ var STROKES = {
 	"𲎯": "23"
 };
 
+const INVERTED_IDS_ALL = _INVERTED_IDS_ALL;
+const CJKVI_IDS = _CJKVI_IDS;
+const STROKES = _STROKES;
 function intersection(arrs) {
-    let prev_arr = arrs[0];
-    for (let arr of arrs) {
-        prev_arr = prev_arr.filter((x) => arr.includes(x));
-    }
-    return prev_arr;
+  let prev_arr = arrs[0];
+  for (const arr of arrs) {
+    prev_arr = prev_arr.filter((x) => arr.includes(x));
+  }
+  return prev_arr;
 }
 function strokeCountFilter(results, strokeCount) {
-    let temp = [];
-    for (const result of results) {
-        if (STROKES[result] == strokeCount) {
-            temp.push(result);
-        }
+  const temp = [];
+  for (const result of results) {
+    if (parseInt(STROKES[result]) == strokeCount) {
+      temp.push(result);
     }
-    return temp;
+  }
+  return temp;
 }
 function idsfind(termString, isDeep = true) {
-    const IDS_DATA = INVERTED_IDS_ALL;
-    const strokeCount = termString.match(/\d+/g);
-    const termIDS = termString.replace(/\d+/g, '');
-    let remainStrokeCount = parseInt(strokeCount);
-    let results = [];
-    let resultsPool = [];
-    if (termIDS.length === 1) {
-        results = IDS_DATA[termIDS];
+  const IDS_DATA = INVERTED_IDS_ALL;
+  const strokeCount = termString.match(/\d+/g);
+  const termIDS = termString.replace(/\d+/g, "");
+  const remainStrokeCount = parseInt(strokeCount);
+  let results = [];
+  let resultsPool;
+  if (termIDS.length === 1) {
+    results = IDS_DATA[termIDS];
+  }
+  if (termIDS.length > 1) {
+    for (const idsPart of termIDS) {
+      resultsPool.push(IDS_DATA[idsPart]);
     }
-    if (termIDS.length > 1) {
-        for (const idsPart of termIDS) {
-            resultsPool.push(IDS_DATA[idsPart]);
-        }
-        results = intersection(resultsPool);
+    results = intersection(resultsPool);
+  }
+  if (remainStrokeCount) {
+    let termStrokeCount = 0;
+    for (const idsPart of termIDS) {
+      const temp = +STROKES[idsPart];
+      termStrokeCount += temp;
     }
-    if (remainStrokeCount) {
-        let termStrokeCount = 0;
-        for (const idsPart of termIDS) {
-            let temp = +STROKES[idsPart];
-            termStrokeCount += temp;
-        }
-        const strokeCountForFilter = termStrokeCount + remainStrokeCount;
-        results = strokeCountFilter(results, strokeCountForFilter);
-    }
-    return results;
+    const strokeCountForFilter = termStrokeCount + remainStrokeCount;
+    results = strokeCountFilter(results, strokeCountForFilter);
+  }
+  return results;
 }
 function getTotalStrokes(char) {
-    return STROKES[char];
+  return parseInt(STROKES[char]);
 }
 function getCjkviIDS(char) {
-    return CJKVI_IDS[char];
+  return CJKVI_IDS[char];
 }
 
 exports.getCjkviIDS = getCjkviIDS;

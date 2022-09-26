@@ -1,8 +1,6 @@
-import typescript from "@rollup/plugin-typescript";
 import json from "@rollup/plugin-json";
 import filesize from 'rollup-plugin-filesize';
-import commonjs from "@rollup/plugin-commonjs";
-
+import esbuild from 'rollup-plugin-esbuild'
 
 import pkg from "./package.json";
 
@@ -26,13 +24,11 @@ export default [
       },
     ],
     plugins: [
-      typescript(
-       {
-        tsconfig: "./tsconfig.json",
-       }
-      ), 
+      esbuild({
+        exclude: [/node_modules/,"**/scripts/*.ts",],
+      }),
+ 
       json(),
-      commonjs(),
       filesize()
     ],
   },
