@@ -1,12 +1,12 @@
 {
   "name": "idsfind",
-  "version": "2.3.5",
+  "version": "2.4.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/es/index.js",
   "scripts": {
-    "gendec":"tsc src/index.ts  -d --emitDeclarationOnly --declarationDir dist --strict false -t es2020 --moduleResolution node",
-    "build": "gendec && rollup -c",
+    "gendec": "tsc src/index.ts  -d --emitDeclarationOnly --declarationDir dist --strict false -t es2020 --moduleResolution node",
+    "build": "rollup -c",
     "test": "node test.js",
     "watch": "rollup -c -w",
     "build:update": "tsc ./src/scripts/update.ts --outDir ./scripts/ --esModuleInterop",
@@ -32,8 +32,10 @@
     "@types/download": "^8.0.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^16.11.6",
+    "esbuild": "^0.15.9",
     "eslint": "^8.1.0",
     "rollup": "^2.59.0",
+    "rollup-plugin-esbuild": "^4.10.1",
     "rollup-plugin-filesize": "^9.1.1",
     "tslib": "^2.3.1",
     "typescript": "^4.4.4"
