@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import _INVERTED_IDS_ALL from "../data/inverted_ids_all.json";
 import _CJKVI_IDS from "../data/cjkvi.json";
 import _STROKES from "../data/Strokes.json";
@@ -9,7 +8,7 @@ const INVERTED_IDS_ALL = _INVERTED_IDS_ALL as InvertedIdsAll;
 const CJKVI_IDS = _CJKVI_IDS as CjkviIds;
 const STROKES = _STROKES as IStrokes;
 
-function intersection(arrs: any[][]) {
+function intersection(arrs: string[][]) {
   let prev_arr: string[] = arrs[0];
   for (const arr of arrs) {
     prev_arr = prev_arr.filter((x) => arr.includes(x));
