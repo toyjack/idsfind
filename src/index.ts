@@ -1,10 +1,9 @@
-let  _ = require('lodash');
-
-import INVERTED_IDS_FIRST_LEVEL from '../data/inverted_ids_first_level.json'
+import * as _ from 'lodash'
+// import INVERTED_IDS_FIRST_LEVEL from '../data/inverted_ids_first_level.json'
 import INVERTED_IDS_ALL from '../data/inverted_ids_all.json'
 import CJKVI_IDS from '../data/cjkvi.json'
 import STROKES from '../data/Strokes.json'
-import GWIDS from '../data/gw_ids.json'
+// import GWIDS from '../data/gw_ids.json'
 
 function intersection(arrs: any[][]) {
   let prev_arr: string[] = arrs[0]
@@ -24,13 +23,8 @@ function strokeCountFilter(results: string[], strokeCount: number): string[] {
   return temp
 }
 
-export function idsfind(termString: string, isDeep?: boolean): string[] {
-  let IDS_DATA = {}
-  if (isDeep == true) {
-    IDS_DATA = INVERTED_IDS_ALL
-  } else {
-    IDS_DATA = INVERTED_IDS_FIRST_LEVEL
-  }
+export function idsfind(termString: string, isDeep=true): string[] {
+  const IDS_DATA = INVERTED_IDS_ALL
   const strokeCount: any = termString.match(/\d+/g)
   const termIDS: string = termString.replace(/\d+/g, '')
   let remainStrokeCount: number = parseInt(strokeCount)
@@ -70,29 +64,29 @@ export function getCjkviIDS(char: string): string {
 }
 
 
-export function get_glyphwiki_ids(ids_string: string) :string[] {
-  let query_list: string[] = []
+// export function get_glyphwiki_ids(ids_string: string) :string[] {
+//   let query_list: string[] = []
 
-  if (!ids_string.length) return
+//   if (!ids_string.length) return
 
-  if (ids_string.length < 2) {
-    query_list = [ids_string]
-  } else {
-    const ids_arr: string[] = ids_string.split("")
-    for (const ids of ids_arr) {
-      let code = ids.codePointAt(0)
-      if (code != undefined) {
-        const gw_name = "u" + code.toString(16)
-        query_list.push(gw_name)  //['u4e00','ua222']
-      }
-    }
-  }
+//   if (ids_string.length < 2) {
+//     query_list = [ids_string]
+//   } else {
+//     const ids_arr: string[] = ids_string.split("")
+//     for (const ids of ids_arr) {
+//       let code = ids.codePointAt(0)
+//       if (code != undefined) {
+//         const gw_name = "u" + code.toString(16)
+//         query_list.push(gw_name)  //['u4e00','ua222']
+//       }
+//     }
+//   }
 
-  // const matches = array.filter(value => /^sortOrder=/.test(value));
-  let results: string[]=GWIDS
-  for (let query of query_list){
-    results = results.filter( v=> _.includes(v, query))
-  }
+//   // const matches = array.filter(value => /^sortOrder=/.test(value));
+//   let results: string[]=GWIDS
+//   for (let query of query_list){
+//     results = results.filter( v=> _.includes(v, query))
+//   }
 
-  return results
-}
+//   return results
+// }
