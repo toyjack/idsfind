@@ -31,51 +31,51 @@ interface Glyph {
 }
 
 
-const UNIHAN_URL: string = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
-const DOWNLOAD_UNIHAN_TO: string = 'data/unihan';
+const UNIHAN_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip"
+const DOWNLOAD_UNIHAN_TO = 'data/unihan';
 
-const CHISE_IDS_URL: string = 'https://gitlab.chise.org/CHISE/ids/-/archive/master/ids-master.zip';
-const DOWNLOAD_CHISEIDS_TO: string = 'data/chise-ids';
+const CHISE_IDS_URL = 'https://gitlab.chise.org/CHISE/ids/-/archive/master/ids-master.zip';
+const DOWNLOAD_CHISEIDS_TO = 'data/chise-ids';
 
 const CJKVI_IDS_URL = "https://github.com/toyjack/cjkvi-ids/archive/refs/heads/master.zip"
-const DOWNLOAD_CJKVIIDS_TO: string = 'data/cjkvi-ids';
+const DOWNLOAD_CJKVIIDS_TO = 'data/cjkvi-ids';
 
 const GLYPHWIKI_DUMP_URL = "http://glyphwiki.org/dump.tar.gz"
-const DOWNLOAD_GLYPHWIKI_DUMP_TO: string = 'data/glyphwiki';
+const DOWNLOAD_GLYPHWIKI_DUMP_TO = 'data/glyphwiki';
 
 
-const DOWNLOAD_OPTIONS: any = {
+const DOWNLOAD_OPTIONS = {
   extract: true
 };
-const CSV_OPTIONS: any = {
+const CSV_OPTIONS = {
   comment: '#',
   delimiter: '\t',
   skip_empty_lines: true,
   relax_column_count: true,
 };
 
-let inverted: ALLINVERTEDIDS = {}
-let depth: number = 0
-let strokesObj: STOKESOBJ = {}
-let idsObj: IDSOBJ = {}
-let cjkviObj: CJKVI_IDS = {}
-let glyphwiki_ids_index: string[] = []
-let glyphwiki_all: Glyph[] = []
+const inverted: ALLINVERTEDIDS = {}
+let depth = 0
+const strokesObj: STOKESOBJ = {}
+const idsObj: IDSOBJ = {}
+const cjkviObj: CJKVI_IDS = {}
+const glyphwiki_ids_index: string[] = []
+const glyphwiki_all: Glyph[] = []
 
 
 function isIDC(part: string) {
-  let code = part.codePointAt(0)
+  const code = part.codePointAt(0)
   return code >= 0x2ff0 && code <= 0x2fff;
 }
 
 
-function writeOutJsonFile(jsonData, fileName) {
+function writeOutJsonFile(jsonData:any, fileName:string) {
   const jsonStr = JSON.stringify(jsonData)
   writeFileSync(fileName, jsonStr, 'utf-8')
 }
 
 function fixSurrogate(idsString: string) {
-  let temp: string[] = []
+  const temp: string[] = []
   for (let i = 0; i < idsString.length; i++) {
     const idsCode = idsString[i].charCodeAt(0)
     if (0xD800 <= idsCode && idsCode <= 0xDBFF) {
@@ -158,7 +158,7 @@ function genInverted(ids: string[], hanzi: string) {
 
     const content = readFileSync(DOWNLOAD_UNIHAN_TO + '/Unihan_IRGSources.txt', 'utf8')
     const records = parse(content, CSV_OPTIONS)
-    for (let record of records) {
+    for (const record of records) {
       if (record[1] == "kTotalStrokes") {
         const unicodeString = record[0]
         const totalStrokes = record[2]
@@ -180,10 +180,10 @@ function genInverted(ids: string[], hanzi: string) {
       const ids_cdef_records = parse(ids_cdef, CSV_OPTIONS)
       // console.log(ids_cdef_records)
       // cjkviObj
-      for (let record of ids_basic_records) {
+      for (const record of ids_basic_records) {
         cjkviObj[record[1]] = record[2]
       }
-      for (let record of ids_cdef_records) {
+      for (const record of ids_cdef_records) {
         cjkviObj[record[1]] = record[2]
       }
       writeOutJsonFile(cjkviObj, 'data/cjkvi.json')
@@ -198,7 +198,7 @@ function genInverted(ids: string[], hanzi: string) {
     const chiseFileList = readdirSync(DOWNLOAD_CHISEIDS_TO + '/ids-master')
     let rawChiseData = ""
     console.log(chalk.blue('Making raw data...'))
-    for (let file of chiseFileList) {
+    for (const file of chiseFileList) {
       if (file.match(/^IDS-UCS-.+/)) {
         console.log('Found ', file);
         let tempData = readFileSync(DOWNLOAD_CHISEIDS_TO + '/ids-master/' + file, 'utf8')
@@ -211,7 +211,7 @@ function genInverted(ids: string[], hanzi: string) {
     console.log(chalk.green('Done!'))
 
     const chiseRecords = parse(rawChiseData, CSV_OPTIONS)
-    for (let record of chiseRecords) {
+    for (const record of chiseRecords) {
       const hanzi = record[1]
       const re_sanshofu = /&[^;]+;/g
       const re_idc = /[⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻]/g
@@ -227,13 +227,13 @@ function genInverted(ids: string[], hanzi: string) {
 
     console.log(chalk.blue("Making inverted IDS data: inverted_ids.json"))
     for (const hanzi in idsObj) {
-      let ids = idsObj[hanzi]
+      const ids = idsObj[hanzi]
       genInverted(ids, hanzi)
     }
     const inverted_ids_first_level = inverted[0]
-    let inverted_ids_remaining = {}
+    const inverted_ids_remaining = {}
     let inverted_ids_all = {}
-    for (let key in inverted) {
+    for (const key in inverted) {
       if (key != "0") {
         inverted_ids_remaining[key] = inverted[key]
       }
