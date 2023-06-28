@@ -1,40 +1,40 @@
 {
   "name": "idsfind",
-  "version": "2.4.0",
+  "version": "3.0.0",
   "description": "",
-  "main": "dist/index.js",
-  "module": "dist/es/index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "gendec": "tsc src/index.ts  -d --emitDeclarationOnly --declarationDir dist --strict false -t es2020 --moduleResolution node",
-    "build": "rollup -c",
-    "test": "node test.js",
-    "watch": "rollup -c -w",
-    "build:update": "tsc ./src/scripts/update.ts --outDir ./scripts/ --esModuleInterop",
-    "update": "node ./scripts/update.js"
+    "build": "rimraf ./dist && tsup src/index.ts --format cjs,esm --dts --clean",
+    "build:update": "tsc ./scripts/update.ts --outDir ./scripts/ --esModuleInterop",
+    "generate": "ts-node ./scripts/update.ts"
   },
   "keywords": [
     "Chinese Character",
-    "IDS"
+    "Ideographic Description Sequence",
+    "Unicode",
+    "Kanji",
+    "Hanzi"
   ],
   "author": "Guanwe Liu <toyjack@gmail.com>",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
-    "@rollup/plugin-json": "^4.1.0",
-    "@types/download": "^8.0.1",
-    "@types/lodash": "^4.14.182",
-    "@types/node": "^16.11.6",
-    "@typescript-eslint/eslint-plugin": "^5.38.0",
-    "@typescript-eslint/parser": "^5.38.0",
-    "chalk": "^4.1.2",
-    "csv-parse": "^4.16.3",
+    "@types/download": "^8.0.2",
+    "@types/lodash": "^4.14.195",
+    "chalk": "^5.2.0",
+    "csv-parse": "^5.4.0",
     "download": "^8.0.0",
-    "esbuild": "^0.15.9",
-    "eslint": "^8.1.0",
-    "rollup": "^2.59.0",
-    "rollup-plugin-esbuild": "^4.10.1",
-    "rollup-plugin-filesize": "^9.1.1",
-    "tslib": "^2.3.1",
-    "typescript": "^4.4.4"
+    "lodash": "^4.17.21",
+    "rimraf": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "tsup": "^7.1.0",
+    "typescript": "^5.1.5"
   }
 }
