@@ -1,8 +1,7 @@
-import _INVERTED_IDS_ALL from "../data/inverted_ids_all.json";
-import _CJKVI_IDS from "../data/cjkvi.json";
-import _STROKES from "../data/Strokes.json";
+import _INVERTED_IDS_ALL from "@/data/inverted_ids_all.json";
+import _CJKVI_IDS from "@/data/cjkvi.json";
+import _STROKES from "@/data/Strokes.json";
 import { IStrokes, CjkviIds, InvertedIdsAll } from "./types";
-// import GWIDS from '../data/gw_ids.json'
 
 const INVERTED_IDS_ALL = _INVERTED_IDS_ALL as InvertedIdsAll;
 const CJKVI_IDS = _CJKVI_IDS as CjkviIds;
@@ -26,13 +25,13 @@ function strokeCountFilter(results: string[], strokeCount: number): string[] {
   return temp;
 }
 
-export function idsfind(termString: string, isDeep = true): string[] {
+export function idsfind(termString: string): string[] {
   const IDS_DATA = INVERTED_IDS_ALL;
-  const strokeCount: any = termString.match(/\d+/g);
+  const strokeCount = termString.match(/\d+/g);
   const termIDS: string = termString.replace(/\d+/g, "");
-  const remainStrokeCount: number = parseInt(strokeCount);
+  const remainStrokeCount = strokeCount ? parseInt(strokeCount[0]) : null;
   let results: string[] = [];
-  let resultsPool :string[][];
+  const resultsPool: string[][] = [];
 
   if (termIDS.length === 1) {
     results = IDS_DATA[termIDS];
@@ -65,30 +64,3 @@ export function getTotalStrokes(char: string): number {
 export function getCjkviIDS(char: string): string {
   return CJKVI_IDS[char];
 }
-
-// export function get_glyphwiki_ids(ids_string: string) :string[] {
-//   let query_list: string[] = []
-
-//   if (!ids_string.length) return
-
-//   if (ids_string.length < 2) {
-//     query_list = [ids_string]
-//   } else {
-//     const ids_arr: string[] = ids_string.split("")
-//     for (const ids of ids_arr) {
-//       let code = ids.codePointAt(0)
-//       if (code != undefined) {
-//         const gw_name = "u" + code.toString(16)
-//         query_list.push(gw_name)  //['u4e00','ua222']
-//       }
-//     }
-//   }
-
-//   // const matches = array.filter(value => /^sortOrder=/.test(value));
-//   let results: string[]=GWIDS
-//   for (let query of query_list){
-//     results = results.filter( v=> _.includes(v, query))
-//   }
-
-//   return results
-// }
