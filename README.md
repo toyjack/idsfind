@@ -9,6 +9,10 @@ Searching Chinese characters by their components and remaining stroke count
 
 ## Changelog
 
+### 3.1.0
+
+- Add Ext.I, Ext.J support
+
 ### 2.4.0
 
 - Add Ext.H support
