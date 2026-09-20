@@ -33,8 +33,10 @@ interface Glyph {
 const UNIHAN_URL = "https://www.unicode.org/Public/UCD/latest/ucd/Unihan.zip";
 const DOWNLOAD_UNIHAN_TO = "data/unihan";
 
+// gitlab.chise.org has an expired TLS certificate as of 2026-09-20, so we
+// pull from the official GitHub mirror instead (same content, same layout).
 const CHISE_IDS_URL =
-  "https://gitlab.chise.org/CHISE/ids/-/archive/master/ids-master.zip";
+  "https://github.com/chise/ids/archive/refs/heads/master.zip";
 const DOWNLOAD_CHISEIDS_TO = "data/chise-ids";
 
 const CJKVI_IDS_URL =
@@ -89,7 +91,11 @@ function fixSurrogate(idsString: string) {
   return temp;
 }
 
-function genInverted(ids: string[], hanzi: string) {
+function genInverted(
+  ids: string[],
+  hanzi: string,
+  visited: Set<string> = new Set()
+) {
   if (ids[0] == "&") {
     return;
   }
@@ -110,12 +116,24 @@ function genInverted(ids: string[], hanzi: string) {
     if (!inverted[depth][idsPart]) {
       inverted[depth][idsPart] = [];
     }
-    inverted[depth][idsPart].push(hanzi);
+    if (!inverted[depth][idsPart].includes(hanzi)) {
+      inverted[depth][idsPart].push(hanzi);
+    }
 
     if (idsObj[idsPart] && idsPart != hanzi) {
+      if (visited.has(idsPart)) {
+        console.warn(
+          chalk.yellow(
+            `Cycle detected in IDS decomposition: ${idsPart} while processing ${hanzi}, skipping recursion.`
+          )
+        );
+        continue;
+      }
+      visited.add(idsPart);
       depth++;
-      genInverted(idsObj[idsPart], hanzi);
+      genInverted(idsObj[idsPart], hanzi, visited);
       depth--;
+      visited.delete(idsPart);
     }
   }
 }
@@ -172,10 +190,7 @@ function genInverted(ids: string[], hanzi: string) {
       if (record[1] == "kTotalStrokes") {
         const unicodeString = record[0];
         const totalStrokes = record[2];
-        const unicode = parseInt(
-          unicodeString.substring(unicodeString.length, 2),
-          16
-        );
+        const unicode = parseInt(unicodeString.slice(2), 16);
         strokesObj[String.fromCodePoint(unicode)] = totalStrokes; // strokesObj['一']=1
       }
     }
@@ -271,6 +286,15 @@ function genInverted(ids: string[], hanzi: string) {
         }
       );
     }
+    // a hanzi can reach the same IDS component through more than one
+    // decomposition depth (e.g. 晶 = ⿱日昍, and 昍 itself decomposes to 日+日),
+    // so the depth-merged result can still contain cross-depth duplicates.
+    const inverted_ids_all_typed = inverted_ids_all as INVERTEDIDS;
+    for (const idsPart in inverted_ids_all_typed) {
+      inverted_ids_all_typed[idsPart] = Array.from(
+        new Set(inverted_ids_all_typed[idsPart])
+      );
+    }
     writeOutJsonFile(
       inverted_ids_first_level,
       "data/inverted_ids_first_level.json"
@@ -282,4 +306,7 @@ function genInverted(ids: string[], hanzi: string) {
     writeOutJsonFile(inverted_ids_all, "data/inverted_ids_all.json");
     console.log(chalk.green("Done"));
   }
-})();
+})().catch((err) => {
+  console.error(chalk.red("Data generation failed:"), err);
+  process.exitCode = 1;
+});

@@ -4,6 +4,14 @@
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
+  "files": [
+    "dist",
+    "data/inverted_ids_all.json",
+    "data/inverted_ids_first_level.json",
+    "data/inverted_ids_remaining.json",
+    "data/cjkvi.json",
+    "data/Strokes.json"
+  ],
   "exports": {
     ".": {
       "require": "./dist/index.js",

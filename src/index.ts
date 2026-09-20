@@ -8,9 +8,10 @@ const CJKVI_IDS = _CJKVI_IDS as CjkviIds;
 const STROKES = _STROKES as IStrokes;
 
 function intersection(arrs: string[][]) {
-  let prev_arr: string[] = arrs[0];
+  let prev_arr: string[] = arrs[0] ?? [];
   for (const arr of arrs) {
-    prev_arr = prev_arr.filter((x) => arr.includes(x));
+    const current = arr ?? [];
+    prev_arr = prev_arr.filter((x) => current.includes(x));
   }
   return prev_arr;
 }
@@ -34,12 +35,12 @@ export function idsfind(termString: string): string[] {
   const resultsPool: string[][] = [];
 
   if (termIDS.length === 1) {
-    results = IDS_DATA[termIDS];
+    results = IDS_DATA[termIDS] ?? [];
   }
 
   if (termIDS.length > 1) {
     for (const idsPart of termIDS) {
-      resultsPool.push(IDS_DATA[idsPart]);
+      resultsPool.push(IDS_DATA[idsPart] ?? []);
     }
     results = intersection(resultsPool);
   }

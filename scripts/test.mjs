@@ -1,6 +1,5 @@
-import {idsfind} from '../dist/index.mjs'
+import {idsfind, getTotalStrokes} from '../dist/index.mjs'
 
-console.log(idsfind("土", false))
-// console.log(idsfind("口13", true))
-
-// console.log(idsfind.getTotalStrokes('土'))
+console.log(idsfind("土"))
+console.log(idsfind("口13"))
+console.log(getTotalStrokes('土'))
