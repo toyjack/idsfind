@@ -1,8 +1,8 @@
-import { existsSync, readFileSync, writeFileSync, readdirSync } from "fs";
-import download from "download";
-import { parse } from "csv-parse/sync";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import chalk from "chalk";
-import { mergeWith, isArray } from "lodash";
+import { parse } from "csv-parse/sync";
+import download from "download";
+import { isArray, mergeWith } from "lodash";
 
 interface IDSOBJ {
   [hanzi: string]: string[];
@@ -70,7 +70,7 @@ function isIDC(part: string) {
   return code >= 0x2ff0 && code <= 0x2fff;
 }
 
-function writeOutJsonFile(jsonData: any, fileName: string) {
+function writeOutJsonFile(jsonData: unknown, fileName: string) {
   const jsonStr = JSON.stringify(jsonData);
   writeFileSync(fileName, jsonStr, "utf-8");
 }
@@ -94,9 +94,9 @@ function fixSurrogate(idsString: string) {
 function genInverted(
   ids: string[],
   hanzi: string,
-  visited: Set<string> = new Set()
+  visited: Set<string> = new Set(),
 ) {
-  if (ids[0] == "&") {
+  if (ids[0] === "&") {
     return;
   }
 
@@ -120,12 +120,12 @@ function genInverted(
       inverted[depth][idsPart].push(hanzi);
     }
 
-    if (idsObj[idsPart] && idsPart != hanzi) {
+    if (idsObj[idsPart] && idsPart !== hanzi) {
       if (visited.has(idsPart)) {
         console.warn(
           chalk.yellow(
-            `Cycle detected in IDS decomposition: ${idsPart} while processing ${hanzi}, skipping recursion.`
-          )
+            `Cycle detected in IDS decomposition: ${idsPart} while processing ${hanzi}, skipping recursion.`,
+          ),
         );
         continue;
       }
@@ -143,14 +143,14 @@ function genInverted(
   await download(
     GLYPHWIKI_DUMP_URL,
     DOWNLOAD_GLYPHWIKI_DUMP_TO,
-    DOWNLOAD_OPTIONS
+    DOWNLOAD_OPTIONS,
   );
-  if (existsSync(DOWNLOAD_GLYPHWIKI_DUMP_TO + "/dump_newest_only.txt")) {
+  if (existsSync(`${DOWNLOAD_GLYPHWIKI_DUMP_TO}/dump_newest_only.txt`)) {
     console.log(chalk.green("Done!"));
     console.log(chalk.blue("Making GlyphWiki database..."));
     const content = readFileSync(
-      DOWNLOAD_GLYPHWIKI_DUMP_TO + "/dump_newest_only.txt",
-      "utf8"
+      `${DOWNLOAD_GLYPHWIKI_DUMP_TO}/dump_newest_only.txt`,
+      "utf8",
     );
     const lines = content.split("\n");
     const regexp = /^ u[\da-f]{4,5}-u[\da-f]{4,5}/;
@@ -177,17 +177,17 @@ function genInverted(
 
   console.log(chalk.blue("Downloading Unihan database..."));
   await download(UNIHAN_URL, DOWNLOAD_UNIHAN_TO, DOWNLOAD_OPTIONS);
-  if (existsSync(DOWNLOAD_UNIHAN_TO + "/Unihan_IRGSources.txt")) {
+  if (existsSync(`${DOWNLOAD_UNIHAN_TO}/Unihan_IRGSources.txt`)) {
     console.log(chalk.green("Done!"));
     console.log(chalk.blue("Making Unihan database..."));
 
     const content = readFileSync(
-      DOWNLOAD_UNIHAN_TO + "/Unihan_IRGSources.txt",
-      "utf8"
+      `${DOWNLOAD_UNIHAN_TO}/Unihan_IRGSources.txt`,
+      "utf8",
     );
     const records = parse(content, CSV_OPTIONS);
     for (const record of records) {
-      if (record[1] == "kTotalStrokes") {
+      if (record[1] === "kTotalStrokes") {
         const unicodeString = record[0];
         const totalStrokes = record[2];
         const unicode = parseInt(unicodeString.slice(2), 16);
@@ -200,17 +200,17 @@ function genInverted(
     console.log(chalk.blue("Downloading cjkvi-ids..."));
     await download(CJKVI_IDS_URL, DOWNLOAD_CJKVIIDS_TO, DOWNLOAD_OPTIONS);
     if (
-      existsSync(DOWNLOAD_CJKVIIDS_TO + "/cjkvi-ids-master/ids.txt") &&
-      existsSync(DOWNLOAD_CJKVIIDS_TO + "/cjkvi-ids-master/ids-ext-cdef.txt")
+      existsSync(`${DOWNLOAD_CJKVIIDS_TO}/cjkvi-ids-master/ids.txt`) &&
+      existsSync(`${DOWNLOAD_CJKVIIDS_TO}/cjkvi-ids-master/ids-ext-cdef.txt`)
     ) {
       console.log(chalk.green("Converting data..."));
       const ids_basic = readFileSync(
-        DOWNLOAD_CJKVIIDS_TO + "/cjkvi-ids-master/ids.txt",
-        "utf8"
+        `${DOWNLOAD_CJKVIIDS_TO}/cjkvi-ids-master/ids.txt`,
+        "utf8",
       );
       const ids_cdef = readFileSync(
-        DOWNLOAD_CJKVIIDS_TO + "/cjkvi-ids-master/ids-ext-cdef.txt",
-        "utf8"
+        `${DOWNLOAD_CJKVIIDS_TO}/cjkvi-ids-master/ids-ext-cdef.txt`,
+        "utf8",
       );
       const ids_basic_records = parse(ids_basic, CSV_OPTIONS);
       const ids_cdef_records = parse(ids_cdef, CSV_OPTIONS);
@@ -229,15 +229,15 @@ function genInverted(
     console.log(chalk.blue("Downloading CHISE..."));
     await download(CHISE_IDS_URL, DOWNLOAD_CHISEIDS_TO, DOWNLOAD_OPTIONS);
     console.log(chalk.green("Done!"));
-    const chiseFileList = readdirSync(DOWNLOAD_CHISEIDS_TO + "/ids-master");
+    const chiseFileList = readdirSync(`${DOWNLOAD_CHISEIDS_TO}/ids-master`);
     let rawChiseData = "";
     console.log(chalk.blue("Making raw data..."));
     for (const file of chiseFileList) {
       if (file.match(/^IDS-UCS-.+/)) {
         console.log("Found ", file);
         let tempData = readFileSync(
-          DOWNLOAD_CHISEIDS_TO + "/ids-master/" + file,
-          "utf8"
+          `${DOWNLOAD_CHISEIDS_TO}/ids-master/${file}`,
+          "utf8",
         );
         //cut first line
         //ref https://stackoverflow.com/questions/2528076/delete-a-line-of-text-in-javascript
@@ -268,10 +268,10 @@ function genInverted(
       genInverted(ids, hanzi);
     }
     const inverted_ids_first_level = inverted[0];
-    const inverted_ids_remaining:any = {};
+    const inverted_ids_remaining: ALLINVERTEDIDS = {};
     let inverted_ids_all = {};
     for (const key in inverted) {
-      if (key != "0") {
+      if (key !== "0") {
         inverted_ids_remaining[key] = inverted[key];
       }
       //merge
@@ -279,11 +279,11 @@ function genInverted(
       inverted_ids_all = mergeWith(
         inverted_ids_all,
         inverted[key],
-        function (a: string[], b: string[]) {
+        (a: string[], b: string[]) => {
           if (isArray(a) && isArray(b)) {
             return a.concat(b);
           }
-        }
+        },
       );
     }
     // a hanzi can reach the same IDS component through more than one
@@ -292,16 +292,16 @@ function genInverted(
     const inverted_ids_all_typed = inverted_ids_all as INVERTEDIDS;
     for (const idsPart in inverted_ids_all_typed) {
       inverted_ids_all_typed[idsPart] = Array.from(
-        new Set(inverted_ids_all_typed[idsPart])
+        new Set(inverted_ids_all_typed[idsPart]),
       );
     }
     writeOutJsonFile(
       inverted_ids_first_level,
-      "data/inverted_ids_first_level.json"
+      "data/inverted_ids_first_level.json",
     );
     writeOutJsonFile(
       inverted_ids_remaining,
-      "data/inverted_ids_remaining.json"
+      "data/inverted_ids_remaining.json",
     );
     writeOutJsonFile(inverted_ids_all, "data/inverted_ids_all.json");
     console.log(chalk.green("Done"));

@@ -1,11 +1,16 @@
-import _INVERTED_IDS_ALL from "@/data/inverted_ids_all.json";
-import _CJKVI_IDS from "@/data/cjkvi.json";
-import _STROKES from "@/data/Strokes.json";
-import { IStrokes, CjkviIds, InvertedIdsAll } from "./types";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import type { CjkviIds, InvertedIdsAll, IStrokes } from "./types";
 
-const INVERTED_IDS_ALL = _INVERTED_IDS_ALL as InvertedIdsAll;
-const CJKVI_IDS = _CJKVI_IDS as CjkviIds;
-const STROKES = _STROKES as IStrokes;
+function loadData<T>(fileName: string): T {
+  return JSON.parse(
+    readFileSync(join(__dirname, "..", "data", fileName), "utf-8"),
+  );
+}
+
+const INVERTED_IDS_ALL = loadData<InvertedIdsAll>("inverted_ids_all.json");
+const CJKVI_IDS = loadData<CjkviIds>("cjkvi.json");
+const STROKES = loadData<IStrokes>("Strokes.json");
 
 function intersection(arrs: string[][]) {
   let prev_arr: string[] = arrs[0] ?? [];
@@ -19,7 +24,7 @@ function intersection(arrs: string[][]) {
 function strokeCountFilter(results: string[], strokeCount: number): string[] {
   const temp: string[] = [];
   for (const result of results) {
-    if (parseInt(STROKES[result]) == strokeCount) {
+    if (parseInt(STROKES[result], 10) === strokeCount) {
       temp.push(result);
     }
   }
@@ -30,7 +35,7 @@ export function idsfind(termString: string): string[] {
   const IDS_DATA = INVERTED_IDS_ALL;
   const strokeCount = termString.match(/\d+/g);
   const termIDS: string = termString.replace(/\d+/g, "");
-  const remainStrokeCount = strokeCount ? parseInt(strokeCount[0]) : null;
+  const remainStrokeCount = strokeCount ? parseInt(strokeCount[0], 10) : null;
   let results: string[] = [];
   const resultsPool: string[][] = [];
 
@@ -59,7 +64,7 @@ export function idsfind(termString: string): string[] {
 }
 
 export function getTotalStrokes(char: string): number {
-  return parseInt(STROKES[char]);
+  return parseInt(STROKES[char], 10);
 }
 
 export function getCjkviIDS(char: string): string {
