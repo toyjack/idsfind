@@ -54,7 +54,7 @@ npm run build
 Download data from Unihan, CHISE, CJKVI-IDS and generate new JSON files.
 
 ```bash
-npm run update
+npm run generate
 ```
 
 ## References
