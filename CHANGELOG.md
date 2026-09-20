@@ -11,6 +11,52 @@ reconstructed from git history, since most releases predate git tags. Version
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-09-20
+
+### Fixed
+- `idsfind()`/`intersection()` no longer throw or return `undefined` for IDS
+  components absent from the index; they now fall back to `[]`.
+- Deduplicated the inverted-index generator (`genInverted` in
+  `scripts/update.ts`): a hanzi could be listed more than once for the same
+  component, both within a single decomposition depth and across depths
+  merged into `inverted_ids_all.json` (e.g. 晶 = ⿱日昍 reaches 日 at two
+  different depths). Regenerated all `data/*.json` accordingly.
+- Added cycle detection to `genInverted` so a malformed decomposition chain
+  (A→B→A) logs a warning and is skipped instead of recursing to a stack
+  overflow.
+- Switched the CHISE IDS data source to the GitHub mirror
+  (`github.com/chise/ids`); `gitlab.chise.org` currently serves an expired
+  TLS certificate and can no longer be downloaded from.
+- Fixed a `substring()` footgun in `scripts/update.ts` that relied on
+  argument auto-swapping to strip the `"U+"` prefix; replaced with `.slice(2)`.
+- Fixed `npm run build:update` failing to resolve `csv-parse/sync`'s type
+  declarations (it wasn't going through the project's `NodeNext` module
+  resolution); added `tsconfig.scripts.json` for it.
+- Fixed the README's "Update data" section, which referenced a nonexistent
+  `npm run update` script (the actual script is `npm run generate`).
+
+### Changed
+- `package.json` now declares an explicit `files` field. `data/gw_all.json`
+  and `data/gw_ids.json` (272.9MB of GlyphWiki data unused by `src`/`dist`)
+  are no longer published, no longer tracked in git, and have been purged
+  from the entire git history (rewritten across `master`/`dev`/`develop`).
+- `src/index.ts` now loads `data/*.json` at runtime via `fs.readFileSync`
+  instead of letting `tsup` statically inline them into the bundle.
+  `dist/index.js`/`dist/index.mjs` shrink from ~10.3MB each to ~3KB, and the
+  npm package's unpacked size drops from 31.9MB to 9.4MB.
+- `scripts/update.ts`'s top-level generation IIFE now has a `.catch()`, so a
+  download/network failure prints a clear error instead of surfacing as an
+  unhandled promise rejection.
+- Replaced the ESLint config (which referenced `@typescript-eslint` packages
+  that were never actually installed, so `eslint` just errored) with Biome;
+  added `lint`/`format`/`check` scripts.
+- `scripts/test.cjs`/`test.mjs` updated to drop the removed `deep` parameter.
+
+### Added
+- `test/idsfind.test.mjs`: automated tests (`node:test`) covering component
+  search, stroke-count filtering, multi-component intersection, index
+  deduplication, and the inputs that used to crash. Wired up via `npm test`.
+
 ## [3.1.1] - 2026-04-27
 
 ### Fixed
